@@ -12,18 +12,18 @@
 #include "steammessages_base.pb.h"
 
 
-CLogger::CLogger()
+CLogger::CLogger() noexcept
 {
 	m_uiMsgNum = 0;
 	char tempName[ MAX_PATH ];
-	GetModuleFileName( NULL, tempName, MAX_PATH );
+	GetModuleFileName( nullptr, tempName, MAX_PATH );
 
 	m_RootDir = tempName;
 	m_RootDir = m_RootDir.substr( 0, m_RootDir.find_last_of( '\\' ) );
 	m_RootDir += "\\nethook\\";
 
 	// create root nethook log directory if it doesn't exist
-	CreateDirectoryA( m_RootDir.c_str(), NULL );
+	CreateDirectoryA( m_RootDir.c_str(), nullptr );
 
 	time_t currentTime;
 	time( &currentTime );
@@ -33,7 +33,7 @@ CLogger::CLogger()
 	m_LogDir = ss.str();
 
 	// create the session log directory
-	CreateDirectoryA( m_LogDir.c_str(), NULL );
+	CreateDirectoryA( m_LogDir.c_str(), nullptr );
 }
 
 
@@ -50,14 +50,14 @@ void CLogger::LogConsole( const char *szFmt, ... )
 	char *szBuff = new char[ buffSize ];
 	memset( szBuff, 0, buffSize );
 
-	int len = vsprintf_s( szBuff, buffSize, szFmt, args );
+	const int len = vsprintf_s( szBuff, buffSize, szFmt, args );
 
 	szBuff[ buffSize - 1 ] = 0;
 
 	HANDLE hOutput = GetStdHandle( STD_OUTPUT_HANDLE );
 
 	DWORD numWritten = 0;
-	WriteFile( hOutput, szBuff, len, &numWritten, NULL );
+	WriteFile( hOutput, szBuff, len, &numWritten, nullptr );
 
 	delete [] szBuff;
 }
@@ -70,12 +70,12 @@ void CLogger::DeleteFile( const char *szFileName, bool bSession )
 	DeleteFileA( outputFile.c_str() );
 }
 
-void CLogger::LogNetMessage( ENetDirection eDirection, uint8 *pData, uint32 cubData )
+void CLogger::LogNetMessage( ENetDirection eDirection, const uint8 *pData, uint32 cubData )
 {
 	EMsg eMsg = (EMsg)*(uint16*)pData;
 	eMsg = (EMsg)((int)eMsg & (~0x80000000));
 
-	if ( eMsg == k_EMsgMulti )
+	if ( eMsg == EMsg::k_EMsgMulti )
 	{
 		this->MultiplexMulti( eDirection, pData, cubData );
 		return;
@@ -84,28 +84,42 @@ void CLogger::LogNetMessage( ENetDirection eDirection, uint8 *pData, uint32 cubD
 	this->LogSessionData( eDirection, pData, cubData );
 }
 
-void CLogger::LogSessionData( ENetDirection eDirection, uint8 *pData, uint32 cubData )
+void CLogger::LogSessionData( ENetDirection eDirection, const uint8 *pData, uint32 cubData )
 {
 	std::string fullFile = m_LogDir;
 
-	const char *outFile = GetFileName( eDirection, (EMsg)*(uint16*)pData );
+	const char *outFile = GetFileNameBase( eDirection, (EMsg)*(uint16*)pData );
 	fullFile += outFile;
 
-	HANDLE hFile = CreateFile( fullFile.c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+	std::string fullFileTmp = fullFile + ".tmp";
+	std::string fullFileFinal = fullFile + ".bin";
+	HANDLE hFile = CreateFile( fullFileTmp.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
 
 	DWORD numBytes = 0;
-	WriteFile( hFile, pData, cubData, &numBytes, NULL );
+	WriteFile( hFile, pData, cubData, &numBytes, nullptr );
 
 	CloseHandle( hFile );
+
+	MoveFile( fullFileTmp.c_str(), fullFileFinal.c_str() );
 
 	this->LogConsole( "Wrote %d bytes to %s\n", cubData, outFile );
 }
 
-void CLogger::LogFile( const char *szFileName, bool bSession, const char *szFmt, ... )
+HANDLE CLogger::OpenFile( const char *szFileName, bool bSession )
 {
 	std::string outputFile = ( bSession ? m_LogDir : m_RootDir );
 	outputFile += szFileName;
 
+	return CreateFile( outputFile.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
+}
+
+void CLogger::CloseFile( HANDLE hFile ) noexcept
+{
+	CloseHandle( hFile );
+}
+
+void CLogger::LogOpenFile( HANDLE hFile, const char *szFmt, ... )
+{
 	va_list args;
 	va_start( args, szFmt );
 
@@ -117,39 +131,35 @@ void CLogger::LogFile( const char *szFileName, bool bSession, const char *szFmt,
 	char *szBuff = new char[ buffSize ];
 	memset( szBuff, 0, buffSize );
 
-	int len = vsprintf_s( szBuff, buffSize, szFmt, args );
+	const int len = vsprintf_s( szBuff, buffSize, szFmt, args );
 
 	szBuff[ buffSize - 1 ] = 0;
 
-	HANDLE hFile = CreateFile( outputFile.c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
-
-	SetFilePointer( hFile, 0, NULL, FILE_END );
+	SetFilePointer( hFile, 0, nullptr, FILE_END );
 
 	DWORD numBytes = 0;
-	WriteFile( hFile, szBuff, len, &numBytes, NULL );
-
-	CloseHandle( hFile );
+	WriteFile( hFile, szBuff, len, &numBytes, nullptr );
 
 	delete [] szBuff;
 }
 
-const char *CLogger::GetFileName( ENetDirection eDirection, EMsg eMsg, uint8 serverType )
+const char *CLogger::GetFileNameBase( ENetDirection eDirection, EMsg eMsg, uint8 serverType )
 {
 	static char szFileName[MAX_PATH];
 
 	sprintf_s(
 		szFileName, sizeof( szFileName ),
-		"%03d_%s_%d_%s.bin",
+		"%03u_%s_%d_%s",
 		++m_uiMsgNum,
-		( eDirection == k_eNetIncoming ? "in" : "out" ),
-		eMsg,
+		( eDirection == ENetDirection::k_eNetIncoming ? "in" : "out" ),
+		static_cast<int>( eMsg ),
 		g_pCrypto->GetMessage( eMsg, serverType )
 	);
 
 	return szFileName;
 }
 
-void CLogger::MultiplexMulti( ENetDirection eDirection, uint8 *pData, uint32 cubData )
+void CLogger::MultiplexMulti( ENetDirection eDirection, const uint8 *pData, uint32 cubData )
 {
 	struct ProtoHdr 
 	{
@@ -158,9 +168,9 @@ void CLogger::MultiplexMulti( ENetDirection eDirection, uint8 *pData, uint32 cub
 	};
 
 
-	ProtoHdr *pProtoHdr = (ProtoHdr*) pData;
+	const ProtoHdr *pProtoHdr = (ProtoHdr*) pData;
 
-	g_pLogger->LogConsole("Multi: msg %d length %d\n", (pProtoHdr->msg & (~0x80000000)), pProtoHdr->headerLength );
+	g_pLogger->LogConsole("Multi: msg %d length %d\n", (static_cast<int>(pProtoHdr->msg) & (~0x80000000)), pProtoHdr->headerLength );
 
 	CMsgProtoBufHeader protoheader;
 	protoheader.ParseFromArray( pData + 8, pProtoHdr->headerLength );
@@ -172,7 +182,7 @@ void CLogger::MultiplexMulti( ENetDirection eDirection, uint8 *pData, uint32 cub
 
 	g_pLogger->LogConsole("MultiMsg: %d %d\n", multi.size_unzipped(), multi.message_body().length() );
 
-	uint8 *pMsgData = NULL;
+	uint8 *pMsgData = nullptr;
 	uint32 cubMsgData = 0;
 	bool bDecomp = false;
 
@@ -182,11 +192,11 @@ void CLogger::MultiplexMulti( ENetDirection eDirection, uint8 *pData, uint32 cub
 
 		uint8 *pDecompressed = new uint8[ multi.size_unzipped() ];
 		uint8 *pCompressed = (uint8 *)( multi.message_body().c_str() );
-		uint32 cubCompressed = multi.message_body().length();
+		const uint32 cubCompressed = multi.message_body().length();
 
 		g_pLogger->LogConsole("decomp: %x comp: %x cubcomp: %d unzipped: %d\n", pDecompressed, pCompressed, cubCompressed, multi.size_unzipped());
 
-		bool bZip = CZip::Inflate( pCompressed, cubCompressed, pDecompressed, multi.size_unzipped() );
+		const bool bZip = CZip::Inflate( pCompressed, cubCompressed, pDecompressed, multi.size_unzipped() );
 
 		if ( !bZip )
 		{
@@ -210,8 +220,8 @@ void CLogger::MultiplexMulti( ENetDirection eDirection, uint8 *pData, uint32 cub
 
 	while ( reader.GetSizeLeft() > 0 )
 	{
-		uint32 cubPayload = reader.Read<uint32>();
-		uint8 *pPayload = reader.ReadBytes( cubPayload );
+		const uint32 cubPayload = reader.Read<uint32>();
+		const uint8 *pPayload = reader.ReadBytes( cubPayload );
 
 		this->LogNetMessage( eDirection, pPayload, cubPayload );
 	}

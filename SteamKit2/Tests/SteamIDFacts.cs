@@ -1,5 +1,6 @@
-﻿using Xunit;
+﻿using System;
 using SteamKit2;
+using Xunit;
 
 namespace Tests
 {
@@ -142,6 +143,7 @@ namespace Tests
                 "[U:1:123:2]",
                 "[G:1:626]",
                 "[A:2:165:1234]",
+                "[M:2:165:1234]",
             };
 
             foreach ( var steamId in steamIds )
@@ -149,7 +151,7 @@ namespace Tests
                 SteamID sid = new SteamID();
                 bool parsed = sid.SetFromSteam3String( steamId );
                 Assert.True( parsed );
-                Assert.Equal( steamId, sid.Render( steam3: true ) );
+                Assert.Equal( steamId, sid.Render() );
             }
         }
 
@@ -230,14 +232,22 @@ namespace Tests
         {
             SteamID sid = 76561197969249708;
 
-            Assert.Equal( "STEAM_0:0:4491990", sid.Render() );
-            Assert.Equal( sid.Render(), sid.ToString() );
+            Assert.Equal( "STEAM_0:0:4491990", sid.Render( steam3: false ) );
 
             sid.AccountUniverse = EUniverse.Beta;
-            Assert.Equal( "STEAM_2:0:4491990", sid.Render() );
+            Assert.Equal( "STEAM_2:0:4491990", sid.Render( steam3: false ) );
 
             sid.AccountType = EAccountType.GameServer;
-            Assert.Equal( "157625991261918636", sid.Render() );
+            Assert.Equal( "157625991261918636", sid.Render( steam3: false ) );
+        }
+
+        [Fact]
+        public void RendersSteam3ByDefault()
+        {
+            SteamID sid = 76561197969249708;
+
+            Assert.Equal( "[U:1:8983980]", sid.Render() );
+            Assert.Equal( "[U:1:8983980]", sid.ToString() );
         }
 
         [Fact]
@@ -305,7 +315,155 @@ namespace Tests
         public void RendersOutOfRangeAccountTypeAsLowercaseI()
         {
             SteamID sid = new SteamID( 123, EUniverse.Beta, (EAccountType)(-1) );
-            Assert.Equal( "[i:2:123]", sid.Render(steam3: true) );
+            Assert.Equal( "[i:2:123]", sid.Render() );
+        }
+
+        [Fact]
+        public void ToChatIDConvertsWellKnownID()
+        {
+            var clanID = new SteamID( 4, EUniverse.Public, EAccountType.Clan );
+            var expectedChatID = 110338190870577156UL;
+            Assert.Equal( expectedChatID, clanID.ToChatID().ConvertToUInt64() );
+        }
+
+        [Fact]
+        public void ToChatIDDoesNotModifySelf()
+        {
+            var clanID = new SteamID( 4, EUniverse.Public, EAccountType.Clan );
+            clanID.ToChatID();
+            Assert.Equal( EUniverse.Public, clanID.AccountUniverse );
+            Assert.Equal( EAccountType.Clan, clanID.AccountType );
+            Assert.Equal( 0u, clanID.AccountInstance );
+            Assert.Equal( 4u, clanID.AccountID );
+        }
+
+        [Theory]
+        [InlineData(EAccountType.AnonGameServer)]
+        [InlineData(EAccountType.AnonUser)]
+        [InlineData(EAccountType.Chat)]
+        [InlineData(EAccountType.ConsoleUser)]
+        [InlineData(EAccountType.ContentServer)]
+        [InlineData(EAccountType.GameServer)]
+        [InlineData(EAccountType.Individual)]
+        [InlineData(EAccountType.Multiseat)]
+        [InlineData(EAccountType.Pending)]
+        public void ToChatIDOnlySupportsClans( EAccountType type )
+        {
+            var id = new SteamID( 1, EUniverse.Public, type );
+            Assert.Throws<InvalidOperationException>( () => id.ToChatID() );
+        }
+
+        [Fact]
+        public void TryGetClanIDConvertsWellKnownID()
+        {
+            var clanID = new SteamID( 4, (uint)SteamID.ChatInstanceFlags.Clan, EUniverse.Public, EAccountType.Chat );
+            Assert.True( clanID.TryGetClanID( out var groupID ) );
+            Assert.Equal( 103582791429521412UL, groupID.ConvertToUInt64() );
+        }
+
+        [Fact]
+        public void TryGetClanIDDoesNotModifySelf()
+        {
+            var clanID = new SteamID(4, (uint)SteamID.ChatInstanceFlags.Clan, EUniverse.Public, EAccountType.Chat );
+            Assert.True( clanID.TryGetClanID( out var groupID ) );
+
+            Assert.Equal( EUniverse.Public, clanID.AccountUniverse );
+            Assert.Equal( EAccountType.Chat, clanID.AccountType );
+            Assert.Equal( ( uint )SteamID.ChatInstanceFlags.Clan, clanID.AccountInstance );
+            Assert.Equal( 4u, clanID.AccountID );
+        }
+
+        [Fact]
+        public void TryGetClanIDReturnsFalseForAdHocChatRoom()
+        {
+            var chatID = new SteamID( 108093571196988453 );
+            Assert.False( chatID.TryGetClanID( out var groupID ), groupID?.Render() );
+            Assert.Null( groupID );
+        }
+
+        [Theory]
+        [InlineData(EAccountType.AnonGameServer)]
+        [InlineData(EAccountType.AnonUser)]
+        [InlineData(EAccountType.ConsoleUser)]
+        [InlineData(EAccountType.ContentServer)]
+        [InlineData(EAccountType.GameServer)]
+        [InlineData(EAccountType.Individual)]
+        [InlineData(EAccountType.Multiseat)]
+        [InlineData(EAccountType.Pending)]
+        public void TryGetClanIDOnlySupportsClanChatRooms( EAccountType type )
+        {
+            var id = new SteamID( 4, ( uint )SteamID.ChatInstanceFlags.Clan, EUniverse.Public, type );
+            Assert.False( id.TryGetClanID( out var groupID ), groupID?.Render() );
+            Assert.Null( groupID );
+        }
+
+        [Theory]
+        [InlineData(EAccountType.Individual)]
+        [InlineData(EAccountType.Multiseat)]
+        [InlineData(EAccountType.GameServer)]
+        [InlineData(EAccountType.AnonGameServer)]
+        [InlineData(EAccountType.Pending)]
+        [InlineData(EAccountType.ContentServer)]
+        [InlineData(EAccountType.Clan)]
+        [InlineData(EAccountType.Chat)]
+        [InlineData(EAccountType.ConsoleUser)]
+        [InlineData(EAccountType.AnonUser)]
+        public void KnownAccountTypesAreValid( EAccountType type )
+        {
+            SteamID sid = 76561198074261126;
+            sid.AccountInstance = 0; // for Clan to pass
+            sid.AccountType = type;
+            Assert.True( sid.IsValid );
+        }
+
+        [Theory]
+        [InlineData(EAccountType.Invalid)]
+        [InlineData((EAccountType)11)]
+        [InlineData((EAccountType)12)]
+        [InlineData((EAccountType)13)]
+        public void UnknownAccountTypesAreInvalid( EAccountType type )
+        {
+            SteamID sid = 76561198074261126;
+            sid.AccountType = type;
+            Assert.False( sid.IsValid );
+        }
+
+        [Theory]
+        [InlineData(EUniverse.Public)]
+        [InlineData(EUniverse.Beta)]
+        [InlineData(EUniverse.Internal)]
+        [InlineData(EUniverse.Dev)]
+        public void KnownAccountUniversesAreValid( EUniverse universe )
+        {
+            SteamID sid = 76561198074261126;
+            sid.AccountUniverse = universe;
+            Assert.True( sid.IsValid );
+        }
+
+        [Theory]
+        [InlineData(EUniverse.Invalid)]
+        [InlineData((EUniverse)5)]
+        [InlineData((EUniverse)6)]
+        [InlineData((EUniverse)7)]
+        public void UnknownAccountUniversesAreInvalid( EUniverse universe )
+        {
+            SteamID sid = 76561198074261126;
+            sid.AccountUniverse = universe;
+            Assert.False( sid.IsValid );
+        }
+
+        [Fact]
+        public void EUniverseEnumHasNotChanged()
+        {
+            // If this enum has changed, update SteamID.IsValid
+            Assert.Equal( 5, Enum.GetValues( typeof( EUniverse ) ).Length );
+        }
+
+        [Fact]
+        public void EAccountTypeEnumHasNotChanged()
+        {
+            // If this enum has changed, update SteamID.IsValid
+            Assert.Equal( 11, Enum.GetValues( typeof( EAccountType ) ).Length );
         }
     }
 }

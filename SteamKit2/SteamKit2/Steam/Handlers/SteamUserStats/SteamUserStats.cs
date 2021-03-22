@@ -28,19 +28,6 @@ namespace SteamKit2
             };
         }
 
-
-        /// <summary>
-        /// Retrieves the number of current players for a given <see cref="GameID"/>.
-        /// Results are returned in a <see cref="NumberOfPlayersCallback"/>.
-        /// </summary>
-        /// <param name="gameId">The GameID to request the number of players for.</param>
-        /// <returns>The Job ID of the request. This can be used to find the appropriate <see cref="NumberOfPlayersCallback"/>.</returns>
-        [Obsolete("Call this method with a numeric app id.")]
-        public AsyncJob<NumberOfPlayersCallback> GetNumberOfCurrentPlayers( GameID gameId )
-        {
-            return GetNumberOfCurrentPlayers( gameId.AppID );
-        }
-
         /// <summary>
         /// Retrieves the number of current players for a given app id.
         /// Results are returned in a <see cref="NumberOfPlayersCallback"/>.
@@ -148,8 +135,12 @@ namespace SteamKit2
         /// <param name="packetMsg">The <see cref="SteamKit2.IPacketMsg"/> instance containing the event data.</param>
         public override void HandleMsg( IPacketMsg packetMsg )
         {
-            Action<IPacketMsg> handlerFunc;
-            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out handlerFunc );
+            if ( packetMsg == null )
+            {
+                throw new ArgumentNullException( nameof(packetMsg) );
+            }
+
+            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out var handlerFunc );
 
             if ( !haveFunc )
             {

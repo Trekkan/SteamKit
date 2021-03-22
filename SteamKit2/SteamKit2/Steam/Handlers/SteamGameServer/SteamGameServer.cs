@@ -24,7 +24,7 @@ namespace SteamKit2
             /// <summary>
             /// Gets or sets the authentication token used to log in as a game server.
             /// </summary>
-            public string Token { get; set; }
+            public string? Token { get; set; }
 
             /// <summary>
             /// Gets or sets the AppID this gameserver will serve.
@@ -50,12 +50,12 @@ namespace SteamKit2
             /// <summary>
             /// Gets or sets the directory the game data is in.
             /// </summary>
-            public string GameDirectory { get; set; }
+            public string? GameDirectory { get; set; }
 
             /// <summary>
             /// Gets or sets the IP address the game server listens on.
             /// </summary>
-            public IPAddress Address { get; set; }
+            public IPAddress? Address { get; set; }
 
             /// <summary>
             /// Gets or sets the port the game server listens on.
@@ -70,7 +70,7 @@ namespace SteamKit2
             /// <summary>
             /// Gets or sets the current version of the game server.
             /// </summary>
-            public string Version { get; set; }
+            public string? Version { get; set; }
         }
 
 
@@ -114,13 +114,12 @@ namespace SteamKit2
 
             var logon = new ClientMsgProtobuf<CMsgClientLogon>( EMsg.ClientLogonGameServer );
 
-            SteamID gsId = new SteamID( 0, 0, Client.ConnectedUniverse, EAccountType.GameServer );
+            SteamID gsId = new SteamID( 0, 0, Client.Universe, EAccountType.GameServer );
 
             logon.ProtoHeader.client_sessionid = 0;
             logon.ProtoHeader.steamid = gsId.ConvertToUInt64();
 
-            uint localIp = NetHelpers.GetIPAddress( this.Client.LocalIP );
-            logon.Body.obfustucated_private_ip = localIp ^ MsgClientLogon.ObfuscationMask;
+            logon.Body.obfuscated_private_ip = NetHelpers.GetMsgIPAddress( this.Client.LocalIP! ).ObfuscatePrivateIP();
 
             logon.Body.protocol_version = MsgClientLogon.CurrentProtocol;
 
@@ -149,13 +148,12 @@ namespace SteamKit2
 
             var logon = new ClientMsgProtobuf<CMsgClientLogon>( EMsg.ClientLogon );
 
-            SteamID gsId = new SteamID( 0, 0, Client.ConnectedUniverse, EAccountType.AnonGameServer );
+            SteamID gsId = new SteamID( 0, 0, Client.Universe, EAccountType.AnonGameServer );
 
             logon.ProtoHeader.client_sessionid = 0;
             logon.ProtoHeader.steamid = gsId.ConvertToUInt64();
 
-            uint localIp = NetHelpers.GetIPAddress( this.Client.LocalIP );
-            logon.Body.obfustucated_private_ip = localIp ^ MsgClientLogon.ObfuscationMask;
+            logon.Body.obfuscated_private_ip = NetHelpers.GetMsgIPAddress( this.Client.LocalIP! ).ObfuscatePrivateIP();
 
             logon.Body.protocol_version = MsgClientLogon.CurrentProtocol;
 
@@ -187,7 +185,7 @@ namespace SteamKit2
         {
             if (details == null)
             {
-                throw new ArgumentNullException("details");
+                throw new ArgumentNullException( nameof(details) );
             }
 
             if (details.Address != null && details.Address.AddressFamily != AddressFamily.InterNetwork)
@@ -205,7 +203,7 @@ namespace SteamKit2
 
             if (details.Address != null)
             {
-                status.Body.game_ip_address = NetHelpers.GetIPAddress( details.Address );
+                status.Body.deprecated_game_ip_address = NetHelpers.GetIPAddressAsUInt( details.Address );
             }
 
             this.Client.Send( status );
@@ -217,8 +215,12 @@ namespace SteamKit2
         /// <param name="packetMsg">The packet message that contains the data.</param>
         public override void HandleMsg( IPacketMsg packetMsg )
         {
-            Action<IPacketMsg> handlerFunc;
-            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out handlerFunc );
+            if ( packetMsg == null )
+            {
+                throw new ArgumentNullException( nameof(packetMsg) );
+            }
+
+            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out var handlerFunc );
 
             if ( !haveFunc )
             {

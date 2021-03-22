@@ -14,9 +14,9 @@ namespace NetHookAnalyzer2
 		{
 			EMsg eMsg = MsgUtil.GetMsg(realEMsg);
 
-			if (MessageTypeOverrides.BodyMap.ContainsKey(eMsg))
+			if (MessageTypeOverrides.BodyMap.TryGetValue(eMsg, out var wellKnownType))
 			{
-				return MessageTypeOverrides.BodyMap[eMsg];
+				return wellKnownType;
 			}
 
 			var protomsgType = SteamKit2Assembly.GetTypes().ToList().Find(t => FilterProtobufMessageBodyType(t, eMsg));
@@ -32,11 +32,9 @@ namespace NetHookAnalyzer2
 		{
 			var gcMsg = MsgUtil.GetGCMsg(rawEMsg);
 
-			Dictionary<uint, Type> gcBodyDict;
-			if (MessageTypeOverrides.GCBodyMap.TryGetValue(gcAppid, out gcBodyDict))
+			if (MessageTypeOverrides.GCBodyMap.TryGetValue(gcAppid, out var gcBodyDict))
 			{
-				Type bodyType;
-				if (gcBodyDict.TryGetValue(gcMsg, out bodyType))
+				if (gcBodyDict.TryGetValue(gcMsg, out var bodyType))
 				{
 					return Enumerable.Repeat(bodyType, 1);
 				}
@@ -112,16 +110,6 @@ namespace NetHookAnalyzer2
 			return true;
 		}
 
-		static bool FilterNonProtobufMessageBodyTypes(Type type, EMsg eMsg)
-		{
-			if (type.GetInterfaces().ToList().Find(@interface => @interface == typeof(ISteamSerializableMessage)) == null)
-				return false;
-
-			var gcMsg = Activator.CreateInstance(type) as ISteamSerializableMessage;
-
-			return gcMsg.GetEMsg() == eMsg;
-		}
-
 		#endregion
 
 		static IEnumerable<string> GetPossibleGCTypePrefixes(uint appid)
@@ -141,7 +129,15 @@ namespace NetHookAnalyzer2
 				case WellKnownAppIDs.CounterStrikeGlobalOffensive:
 					yield return "SteamKit2.GC.CSGO.Internal.CMsg";
 					break;
-			}
+
+				case WellKnownAppIDs.Artifact:
+					yield return "SteamKit2.GC.Artifact.Internal.CMsg";
+					break;
+
+                case WellKnownAppIDs.Underlords:
+                    yield return "SteamKit2.GC.Underlords.Internal.CMsg";
+                    break;
+            }
 		}
 	}
 }

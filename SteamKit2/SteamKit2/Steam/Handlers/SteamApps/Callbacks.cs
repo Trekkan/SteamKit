@@ -88,6 +88,23 @@ namespace SteamKit2
                 /// <value>The territory code.</value>
                 public int TerritoryCode { get; private set; }
 
+                /// <summary>
+                /// Gets the owner account id of the license.
+                /// </summary>
+                /// <value>The owned account id.</value>
+                public uint OwnerAccountID { get; private set; }
+
+                /// <summary>
+                /// Gets the PICS access token for this package.
+                /// </summary>
+                /// <value>The access token.</value>
+                public ulong AccessToken { get; private set; }
+
+                /// <summary>
+                /// Gets the master package id.
+                /// </summary>
+                /// <value>The master package id.</value>
+                public uint MasterPackageID { get; private set; }
 
                 internal License( CMsgClientLicenseList.License license )
                 {
@@ -109,6 +126,10 @@ namespace SteamKit2
                     this.LicenseType = ( ELicenseType )license.license_type;
 
                     this.TerritoryCode = license.territory_code;
+
+                    this.AccessToken = license.access_token;
+                    this.OwnerAccountID = license.owner_id;
+                    this.MasterPackageID = license.master_package_id;
                 }
             }
 
@@ -198,247 +219,6 @@ namespace SteamKit2
                 this.Result = ( EResult )msg.eresult;
                 this.AppID = msg.app_id;
                 this.Ticket = msg.ticket;
-            }
-        }
-
-// Ambiguous reference in cref attribute: 'SteamApps.GetPackageInfo'. Assuming 'SteamKit2.SteamApps.GetPackageInfo(uint, bool)',
-// but could have also matched other overloads including 'SteamKit2.SteamApps.GetPackageInfo(System.Collections.Generic.IEnumerable<uint>, bool)'.
-#pragma warning disable 0419
-
-        /// <summary>
-        /// This callback is received in response to calling <see cref="SteamApps.GetAppInfo"/>.
-        /// </summary>
-        public sealed class AppInfoCallback : CallbackMsg
-#pragma warning restore 0419
-        {
-            /// <summary>
-            /// Represents a single app in the info response.
-            /// </summary>
-            public sealed class App
-            {
-                /// <summary>
-                /// The status of a requested app.
-                /// </summary>
-                public enum AppInfoStatus
-                {
-                    /// <summary>
-                    /// The information for this app was requested successfully.
-                    /// </summary>
-                    OK,
-                    /// <summary>
-                    /// This app is unknown.
-                    /// </summary>
-                    Unknown
-                }
-
-
-                /// <summary>
-                /// Gets the status of the app.
-                /// </summary>
-                public AppInfoStatus Status { get; private set; }
-                /// <summary>
-                /// Gets the AppID for this app.
-                /// </summary>
-                public uint AppID { get; private set; }
-                /// <summary>
-                /// Gets the last change number for this app.
-                /// </summary>
-                public uint ChangeNumber { get; private set; }
-                /// <summary>
-                /// Gets a section data for this app.
-                /// </summary>
-                public Dictionary<EAppInfoSection, KeyValue> Sections { get; private set; }
-
-
-                internal App( CMsgClientAppInfoResponse.App app, AppInfoStatus status )
-                {
-                    Status = status;
-                    AppID = app.app_id;
-                    ChangeNumber = app.change_number;
-                    Sections = new Dictionary<EAppInfoSection, KeyValue>();
-
-                    foreach ( var section in app.sections )
-                    {
-                        KeyValue kv = new KeyValue();
-
-                        using ( MemoryStream ms = new MemoryStream( section.section_kv ) )
-                        {
-                            if ( kv.TryReadAsBinary( ms ) )
-                            {
-                                Sections.Add( ( EAppInfoSection )section.section_id, kv );
-                            }
-                        }
-                    }
-                }
-
-                internal App( uint appid, AppInfoStatus status )
-                {
-                    Status = status;
-                    AppID = appid;
-                }
-            }
-
-            /// <summary>
-            /// Gets the list of apps this response contains.
-            /// </summary>
-            public ReadOnlyCollection<App> Apps { get; private set; }
-            /// <summary>
-            /// Gets the number of apps pending in this response.
-            /// </summary>
-            public uint AppsPending { get; private set; }
-
-
-            internal AppInfoCallback( JobID jobID, CMsgClientAppInfoResponse msg )
-            {
-                JobID = jobID;
-
-                var list = new List<App>();
-
-                list.AddRange( msg.apps.Select( a => new App( a, App.AppInfoStatus.OK ) ) );
-                list.AddRange( msg.apps_unknown.Select( a => new App( a, App.AppInfoStatus.Unknown ) ) );
-
-                AppsPending = msg.apps_pending;
-
-                Apps = new ReadOnlyCollection<App>( list );
-            }
-        }
-
-        // Ambiguous reference in cref attribute: 'SteamApps.GetPackageInfo'. Assuming 'SteamKit2.SteamApps.GetPackageInfo(uint, bool)',
-        // but could have also matched other overloads including 'SteamKit2.SteamApps.GetPackageInfo(System.Collections.Generic.IEnumerable<uint>, bool)'.
-#pragma warning disable 0419
-
-        /// <summary>
-        /// This callback is received in response to calling <see cref="SteamApps.GetPackageInfo"/>.
-        /// </summary>
-        public sealed class PackageInfoCallback : CallbackMsg
-#pragma warning restore 0419
-        {
-            /// <summary>
-            /// Represents a single package in this response.
-            /// </summary>
-            public sealed class Package
-            {
-                /// <summary>
-                /// The status of a package.
-                /// </summary>
-                public enum PackageStatus
-                {
-                    /// <summary>
-                    /// The information for this package was requested successfully.
-                    /// </summary>
-                    OK,
-                    /// <summary>
-                    /// This package is unknown.
-                    /// </summary>
-                    Unknown,
-                }
-
-                /// <summary>
-                /// Gets the status of this package.
-                /// </summary>
-                public PackageStatus Status { get; private set; }
-                /// <summary>
-                /// Gets the PackageID for this package.
-                /// </summary>
-                public uint PackageID { get; private set; }
-                /// <summary>
-                /// Gets the last change number for this package.
-                /// </summary>
-                public uint ChangeNumber { get; private set; }
-                /// <summary>
-                /// Gets a hash of the package data for caching purposes.
-                /// </summary>
-                public byte[] Hash { get; private set; }
-                /// <summary>
-                /// Gets the data for this package.
-                /// </summary>
-                public KeyValue Data { get; private set; }
-
-
-                internal Package( CMsgClientPackageInfoResponse.Package pack, Package.PackageStatus status )
-                {
-                    Status = status;
-
-                    PackageID = pack.package_id;
-                    ChangeNumber = pack.change_number;
-                    Hash = pack.sha;
-
-                    Data = new KeyValue();
-
-                    using ( var ms = new MemoryStream( pack.buffer ) )
-                    using ( var br = new BinaryReader( ms ) )
-                    {
-                        // steamclient checks this value == 1 before it attempts to read the KV from the buffer
-                        // see: CPackageInfo::UpdateFromBuffer(CSHA const&,uint,CUtlBuffer &)
-                        // todo: we've apparently ignored this with zero ill effects, but perhaps we want to respect it?
-                        br.ReadUInt32();
-                        
-                        Data.TryReadAsBinary( ms );
-                    }
-                }
-
-                internal Package( uint packageId, Package.PackageStatus status )
-                {
-                    Status = status;
-                    PackageID = packageId;
-                }
-            }
-
-
-            /// <summary>
-            /// Gets the list of packages this response contains.
-            /// </summary>
-            public ReadOnlyCollection<Package> Packages { get; private set; }
-            /// <summary>
-            /// Gets a count of packages pending in this response.
-            /// </summary>
-            public uint PackagesPending { get; private set; }
-
-
-            internal PackageInfoCallback( JobID jobID, CMsgClientPackageInfoResponse msg )
-            {
-                JobID = jobID;
-
-                var packages = new List<Package>();
-
-                packages.AddRange( msg.packages.Select( p => new Package( p, Package.PackageStatus.OK ) ) );
-                packages.AddRange( msg.packages_unknown.Select( p => new Package( p, Package.PackageStatus.Unknown ) ) );
-
-                PackagesPending = msg.packages_pending;
-
-                Packages = new ReadOnlyCollection<Package>( packages );
-            }
-        }
-
-        /// <summary>
-        /// This callback is received in response to calling <see cref="SteamApps.GetAppChanges"/>.
-        /// </summary>
-        public sealed class AppChangesCallback : CallbackMsg
-        {
-            /// <summary>
-            /// Gets the list of AppIDs that have changed since the last change number request.
-            /// </summary>
-            public ReadOnlyCollection<uint> AppIDs { get; private set; }
-            /// <summary>
-            /// Gets the current change number.
-            /// </summary>
-            public uint CurrentChangeNumber { get; private set; }
-
-            /// <summary>
-            /// Gets a value indicating whether the backend wishes for the client to perform a full update.
-            /// </summary>
-            /// <value>
-            /// 	<c>true</c> if the client should perform a full update; otherwise, <c>false</c>.
-            /// </value>
-            public bool ForceFullUpdate { get; private set; }
-
-
-            internal AppChangesCallback( CMsgClientAppInfoChanges msg )
-            {
-                AppIDs = new ReadOnlyCollection<uint>( msg.appIDs );
-                CurrentChangeNumber = msg.current_change_number;
-
-                ForceFullUpdate = msg.force_full_update;
             }
         }
 
@@ -556,12 +336,12 @@ namespace SteamKit2
 
                 foreach ( var package_token in msg.package_access_tokens )
                 {
-                    PackageTokens.Add( package_token.packageid, package_token.access_token );
+                    PackageTokens[ package_token.packageid ] = package_token.access_token;
                 }
 
                 foreach ( var app_token in msg.app_access_tokens )
                 {
-                    AppTokens.Add( app_token.appid, app_token.access_token );
+                    AppTokens[ app_token.appid ] = app_token.access_token;
                 }
             }
         }
@@ -617,6 +397,14 @@ namespace SteamKit2
             /// </summary>
             public bool RequiresFullUpdate { get; private set; }
             /// <summary>
+            /// If this update requires a full update of the app information
+            /// </summary>
+            public bool RequiresFullAppUpdate { get; private set; }
+            /// <summary>
+            /// If this update requires a full update of the package information
+            /// </summary>
+            public bool RequiresFullPackageUpdate { get; private set; }
+            /// <summary>
             /// Dictionary containing requested package tokens
             /// </summary>
             public Dictionary<uint, PICSChangeData> PackageChanges { get; private set; }
@@ -633,17 +421,19 @@ namespace SteamKit2
                 LastChangeNumber = msg.since_change_number;
                 CurrentChangeNumber = msg.current_change_number;
                 RequiresFullUpdate = msg.force_full_update;
+                RequiresFullAppUpdate = msg.force_full_app_update;
+                RequiresFullPackageUpdate = msg.force_full_package_update;
                 PackageChanges = new Dictionary<uint, PICSChangeData>();
                 AppChanges = new Dictionary<uint, PICSChangeData>();
 
                 foreach ( var package_change in msg.package_changes )
                 {
-                    PackageChanges.Add( package_change.packageid, new PICSChangeData( package_change ) );
+                    PackageChanges[ package_change.packageid ] = new PICSChangeData( package_change );
                 }
 
                 foreach ( var app_change in msg.app_changes )
                 {
-                    AppChanges.Add( app_change.appid, new PICSChangeData( app_change ) );
+                    AppChanges[ app_change.appid ] = new PICSChangeData( app_change );
                 }
             }
         }
@@ -673,7 +463,7 @@ namespace SteamKit2
                 /// <summary>
                 /// Gets the hash of the content
                 /// </summary>
-                public byte[] SHAHash { get; private set; }
+                public byte[]? SHAHash { get; private set; }
                 /// <summary>
                 /// Gets the KeyValue info
                 /// </summary>
@@ -689,7 +479,7 @@ namespace SteamKit2
                 /// <summary>
                 /// For an app metadata-only request, returns the Uri for HTTP appinfo requests.
                 /// </summary>
-                public Uri HttpUri { get; private set; }
+                public Uri? HttpUri { get; private set; }
 
                 internal PICSProductInfo( CMsgClientPICSProductInfoResponse parentResponse, CMsgClientPICSProductInfoResponse.AppInfo app_info)
                 {
@@ -700,7 +490,7 @@ namespace SteamKit2
 
                     this.KeyValues = new KeyValue();
 
-                    if ( app_info.buffer != null )
+                    if ( app_info.buffer != null && app_info.buffer.Length > 0 )
                     {
                         // we don't want to read the trailing null byte
                         using ( var ms = new MemoryStream( app_info.buffer, 0, app_info.buffer.Length - 1 ) )
@@ -788,12 +578,12 @@ namespace SteamKit2
 
                 foreach ( var package_info in msg.packages )
                 {
-                    Packages.Add( package_info.packageid, new PICSProductInfo( package_info ) );
+                    Packages[ package_info.packageid ] = new PICSProductInfo( package_info );
                 }
 
                 foreach ( var app_info in msg.apps )
                 {
-                    Apps.Add( app_info.appid, new PICSProductInfo( msg, app_info ) );
+                    Apps[ app_info.appid ] = new PICSProductInfo( msg, app_info );
                 }
             }
         }
@@ -834,23 +624,6 @@ namespace SteamKit2
                     kv.TryReadAsBinary( payload );
                     GuestPasses.Add( kv );
                 }
-            }
-        }
-
-        /// <summary>
-        /// This callback is received when a guest pass has been sent
-        /// </summary>
-        public sealed class SendGuestPassCallback : CallbackMsg
-        {
-            /// <summary>
-            /// Result of the operation
-            /// </summary>
-            public EResult Result { get; set; }
-
-
-            internal SendGuestPassCallback( MsgClientSendGuestPassResponse msg )
-            {
-                Result = msg.Result;
             }
         }
 
@@ -905,7 +678,7 @@ namespace SteamKit2
 
                 foreach ( var password in msg.betapasswords )
                 {
-                    BetaPasswords.Add( password.betaname, Utils.DecodeHexString( password.betapassword ) );
+                    BetaPasswords[ password.betaname ] = Utils.DecodeHexString( password.betapassword );
                 }
             }
         }

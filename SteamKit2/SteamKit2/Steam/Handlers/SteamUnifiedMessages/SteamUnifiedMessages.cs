@@ -42,11 +42,16 @@ namespace SteamKit2
             /// <returns>The JobID of the request. This can be used to find the appropriate <see cref="ServiceMethodResponse"/>.</returns>
             public AsyncJob<ServiceMethodResponse> SendMessage<TResponse>( Expression<Func<TService, TResponse>> expr, bool isNotification = false )
             {
-                var call = expr.Body as MethodCallExpression;
+                if ( expr == null )
+                {
+                    throw new ArgumentNullException( nameof(expr) );
+                }
+
+                var call = ExtractMethodCallExpression( expr, nameof(expr) );
                 var methodInfo = call.Method;
 
                 var argument = call.Arguments.Single();
-                object message = null;
+                object message;
 
                 if ( argument.NodeType == ExpressionType.MemberAccess )
                 {
@@ -66,9 +71,30 @@ namespace SteamKit2
 
                 var rpcName = string.Format( "{0}.{1}#{2}", serviceName, methodName, version );
 
-                var method = typeof(SteamUnifiedMessages).GetMethod( "SendMessage" ).MakeGenericMethod( message.GetType() );
+                var method = typeof(SteamUnifiedMessages).GetMethod( nameof(SteamUnifiedMessages.SendMessage) ).MakeGenericMethod( message.GetType() );
                 var result = method.Invoke( this.steamUnifiedMessages, new[] { rpcName, message, isNotification } );
-                return (AsyncJob<ServiceMethodResponse>)result;
+                return ( AsyncJob<ServiceMethodResponse> )result;
+            }
+            
+            static MethodCallExpression ExtractMethodCallExpression<TResponse>( Expression<Func<TService, TResponse>> expression, string paramName )
+            {
+                switch ( expression.NodeType )
+                {
+                    // Older code/tests/whatever were compiled down to just a single MethodCallExpression.
+                    case ExpressionType.Call:
+                        return ( MethodCallExpression )expression.Body;
+
+                    // Newer code/tests/whatever are now compiled by wrapping the MethodCallExpression in a LambdaExpression.
+                    case ExpressionType.Lambda:
+                        if ( expression.Body.NodeType == ExpressionType.Call )
+                        {
+                            var lambda = ( LambdaExpression )expression;
+                            return ( MethodCallExpression )lambda.Body;
+                        }
+                        break;
+                }
+
+                throw new ArgumentException( "Expression must be a method call.", paramName );
             }
         }
 
@@ -79,7 +105,7 @@ namespace SteamKit2
         {
             dispatchMap = new Dictionary<EMsg, Action<IPacketMsg>>
             {
-                { EMsg.ClientServiceMethodResponse, HandleClientServiceMethodResponse },
+                { EMsg.ClientServiceMethodLegacyResponse, HandleClientServiceMethodResponse },
                 { EMsg.ServiceMethod, HandleServiceMethod },
             };
         }
@@ -97,7 +123,12 @@ namespace SteamKit2
         public AsyncJob<ServiceMethodResponse> SendMessage<TRequest>( string name, TRequest message, bool isNotification = false )
             where TRequest : IExtensible
         {
-            var msg = new ClientMsgProtobuf<CMsgClientServiceMethod>( EMsg.ClientServiceMethod );
+            if ( message == null )
+            {
+                throw new ArgumentNullException( nameof(message) );
+            }
+
+            var msg = new ClientMsgProtobuf<CMsgClientServiceMethodLegacy>( EMsg.ClientServiceMethodLegacy );
             msg.SourceJobID = Client.GetNextJobID();
 
             using ( var ms = new MemoryStream() )
@@ -131,8 +162,12 @@ namespace SteamKit2
         /// <param name="packetMsg">The packet message that contains the data.</param>
         public override void HandleMsg( IPacketMsg packetMsg )
         {
-            Action<IPacketMsg> handlerFunc;
-            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out handlerFunc );
+            if ( packetMsg == null )
+            {
+                throw new ArgumentNullException( nameof(packetMsg) );
+            }
+
+            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out var handlerFunc );
 
             if ( !haveFunc )
             {
@@ -147,8 +182,7 @@ namespace SteamKit2
         #region ClientMsg Handlers
         void HandleClientServiceMethodResponse( IPacketMsg packetMsg )
         {
-            var response = new ClientMsgProtobuf<CMsgClientServiceMethodResponse>( packetMsg );
-
+            var response = new ClientMsgProtobuf<CMsgClientServiceMethodLegacyResponse>( packetMsg );
             var callback = new ServiceMethodResponse(response.TargetJobID, (EResult)response.ProtoHeader.eresult, response.Body);
             Client.PostCallback( callback );
         }
@@ -166,7 +200,7 @@ namespace SteamKit2
                 var serviceName = splitByDot[0];
                 var methodName = splitByHash[0];
 
-                var serviceInterfaceName = "SteamKit2.Unified.Internal.I" + serviceName;
+                var serviceInterfaceName = "SteamKit2.Internal.I" + serviceName;
                 var serviceInterfaceType = Type.GetType( serviceInterfaceName );
                 if (serviceInterfaceType != null)
                 {

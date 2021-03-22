@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 using ProtoBuf;
 
 namespace SteamKit2.Discovery
@@ -11,8 +7,19 @@ namespace SteamKit2.Discovery
     class BasicServerListProto
     {
         [ProtoMember(1)]
-        public String ipAddress { get; set; }
+        [DisallowNull, NotNull]
+        public string? Address { get; set; }
+
         [ProtoMember(2)]
-        public int port { get; set; }
+        public int Port { get; set; }
+
+        [ProtoMember(3)]
+        public ProtocolTypes Protocols
+        {
+            get => protocolTypes ?? (ProtocolTypes.Tcp | ProtocolTypes.Udp);
+            set => protocolTypes = value;
+        }
+
+        ProtocolTypes? protocolTypes;
     }
 }

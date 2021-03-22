@@ -24,18 +24,18 @@ namespace SteamKit2
             /// Gets or sets the username.
             /// </summary>
             /// <value>The username.</value>
-            public string Username { get; set; }
+            public string? Username { get; set; }
             /// <summary>
             /// Gets or sets the password.
             /// </summary>
             /// <value>The password.</value>
-            public string Password { get; set; }
+            public string? Password { get; set; }
 
             /// <summary>
             /// Gets or sets the CellID.
             /// </summary>
             /// <value>The CellID.</value>
-            public uint CellID { get; set; }
+            public uint? CellID { get; set; }
 
             /// <summary>
             /// Gets or sets the LoginID. This number is used for identifying logon session.
@@ -53,17 +53,17 @@ namespace SteamKit2
             /// Gets or sets the Steam Guard auth code used to login. This is the code sent to the user's email.
             /// </summary>
             /// <value>The auth code.</value>
-            public string AuthCode { get; set; }
+            public string? AuthCode { get; set; }
             /// <summary>
             /// Gets or sets the 2-factor auth code used to login. This is the code that can be received from the authenticator apps.
             /// </summary>
             /// <value>The two factor auth code.</value>
-            public string TwoFactorCode { get; set; }
+            public string? TwoFactorCode { get; set; }
             /// <summary>
             /// Gets or sets the login key used to login. This is a key that has been recieved in a previous Steam sesson by a <see cref="LoginKeyCallback"/>.
             /// </summary>
             /// <value>The login key.</value>
-            public string LoginKey { get; set; }
+            public string? LoginKey { get; set; }
             /// <summary>
             /// Gets or sets the 'Should Remember Password' flag. This is used in combination with the login key and <see cref="LoginKeyCallback"/> for password-less login.
             /// </summary>
@@ -73,7 +73,7 @@ namespace SteamKit2
             /// Gets or sets the sentry file hash for this logon attempt, or null if no sentry file is available.
             /// </summary>
             /// <value>The sentry file hash.</value>
-            public byte[] SentryFileHash { get; set; }
+            public byte[]? SentryFileHash { get; set; }
 
             /// <summary>
             /// Gets or sets the account instance. 1 for the PC instance or 2 for the Console (PS3) instance.
@@ -133,7 +133,7 @@ namespace SteamKit2
             /// Gets or sets the CellID.
             /// </summary>
             /// <value>The CellID.</value>
-            public uint CellID { get; set; }
+            public uint? CellID { get; set; }
 
             /// <summary>
             /// Gets or sets the client operating system type.
@@ -173,7 +173,7 @@ namespace SteamKit2
                 /// <summary>
                 /// Gets or sets the one-time-password identifier.
                 /// </summary>
-                public string Identifier { get; set; }
+                public string? Identifier { get; set; }
                 /// <summary>
                 /// Gets or sets the one-time-password value.
                 /// </summary>
@@ -185,7 +185,7 @@ namespace SteamKit2
             /// This is provided in the <see cref="Callback&lt;T&gt;"/> for a <see cref="UpdateMachineAuthCallback"/>.
             /// </summary>
             /// <value>The Job ID.</value>
-            public JobID JobID { get; set; }
+            public JobID? JobID { get; set; }
 
             /// <summary>
             /// Gets or sets the result of updating the machine auth.
@@ -208,7 +208,7 @@ namespace SteamKit2
             /// Gets or sets the filename of the sentry file that was written.
             /// </summary>
             /// <value>The name of the sentry file.</value>
-            public string FileName { get; set; }
+            public string? FileName { get; set; }
             /// <summary>
             /// Gets or sets the size of the sentry file.
             /// </summary>
@@ -225,7 +225,7 @@ namespace SteamKit2
             /// Gets or sets the SHA-1 hash of the sentry file.
             /// </summary>
             /// <value>The sentry file hash.</value>
-            public byte[] SentryFileHash { get; set; }
+            public byte[]? SentryFileHash { get; set; }
 
             /// <summary>
             /// Gets or sets the one-time-password details.
@@ -248,7 +248,7 @@ namespace SteamKit2
         /// Gets the SteamID of this client. This value is assigned after a logon attempt has succeeded.
         /// </summary>
         /// <value>The SteamID.</value>
-        public SteamID SteamID
+        public SteamID? SteamID
         {
             get { return this.Client.SteamID; }
         }
@@ -266,6 +266,7 @@ namespace SteamKit2
                 { EMsg.ClientSessionToken, HandleSessionToken },
                 { EMsg.ClientUpdateMachineAuth, HandleUpdateMachineAuth },
                 { EMsg.ClientAccountInfo, HandleAccountInfo },
+                { EMsg.ClientEmailAddrInfo, HandleEmailAddrInfo },
                 { EMsg.ClientWalletInfoUpdate, HandleWalletInfo },
                 { EMsg.ClientRequestWebAPIAuthenticateUserNonceResponse, HandleWebAPIUserNonce },
                 { EMsg.ClientMarketingMessageUpdate2, HandleMarketingMessageUpdate },
@@ -290,7 +291,7 @@ namespace SteamKit2
         {
             if ( details == null )
             {
-                throw new ArgumentNullException( "details" );
+                throw new ArgumentNullException( nameof(details) );
             }
             if ( string.IsNullOrEmpty( details.Username ) || ( string.IsNullOrEmpty( details.Password ) && string.IsNullOrEmpty( details.LoginKey ) ) )
             {
@@ -311,16 +312,25 @@ namespace SteamKit2
 
             var logon = new ClientMsgProtobuf<CMsgClientLogon>( EMsg.ClientLogon );
 
-            SteamID steamId = new SteamID( details.AccountID, details.AccountInstance, Client.ConnectedUniverse, EAccountType.Individual );
+            SteamID steamId = new SteamID( details.AccountID, details.AccountInstance, Client.Universe, EAccountType.Individual );
 
             if ( details.LoginID.HasValue )
             {
-                logon.Body.obfustucated_private_ip = details.LoginID.Value;
+                // TODO: Support IPv6 login ids?
+                logon.Body.obfuscated_private_ip = new CMsgIPAddress
+                {
+                    v4 = details.LoginID.Value
+                };
             }
             else
             {
-                uint localIp = NetHelpers.GetIPAddress( this.Client.LocalIP );
-                logon.Body.obfustucated_private_ip = localIp ^ MsgClientLogon.ObfuscationMask;
+                logon.Body.obfuscated_private_ip = NetHelpers.GetMsgIPAddress( this.Client.LocalIP! ).ObfuscatePrivateIP();
+            }
+
+            // Legacy field, Steam client still sets it
+            if ( logon.Body.obfuscated_private_ip.ShouldSerializev4() )
+            {
+                logon.Body.deprecated_obfustucated_private_ip = logon.Body.obfuscated_private_ip.v4;
             }
 
             logon.ProtoHeader.client_sessionid = 0;
@@ -333,7 +343,7 @@ namespace SteamKit2
             logon.Body.protocol_version = MsgClientLogon.CurrentProtocol;
             logon.Body.client_os_type = ( uint )details.ClientOSType;
             logon.Body.client_language = details.ClientLanguage;
-            logon.Body.cell_id = details.CellID;
+            logon.Body.cell_id = details.CellID ?? Client.Configuration.CellID;
 
             logon.Body.steam2_ticket_request = details.RequestSteam2Ticket;
 
@@ -372,6 +382,11 @@ namespace SteamKit2
         /// <param name="details">The details to use for logging on.</param>
         public void LogOnAnonymous( AnonymousLogOnDetails details )
         {
+            if ( details == null )
+            {
+                throw new ArgumentNullException( nameof(details) );
+            }
+
             if ( !this.Client.IsConnected )
             {
                 this.Client.PostCallback( new LoggedOnCallback( EResult.NoConnection ) );
@@ -380,7 +395,7 @@ namespace SteamKit2
 
             var logon = new ClientMsgProtobuf<CMsgClientLogon>( EMsg.ClientLogon );
 
-            SteamID auId = new SteamID( 0, 0, Client.ConnectedUniverse, EAccountType.AnonUser );
+            SteamID auId = new SteamID( 0, 0, Client.Universe, EAccountType.AnonUser );
 
             logon.ProtoHeader.client_sessionid = 0;
             logon.ProtoHeader.steamid = auId.ConvertToUInt64();
@@ -388,7 +403,7 @@ namespace SteamKit2
             logon.Body.protocol_version = MsgClientLogon.CurrentProtocol;
             logon.Body.client_os_type = ( uint )details.ClientOSType;
             logon.Body.client_language = details.ClientLanguage;
-            logon.Body.cell_id = details.CellID;
+            logon.Body.cell_id = details.CellID ?? Client.Configuration.CellID;
 
             logon.Body.machine_id = HardwareUtils.GetMachineID();
 
@@ -414,10 +429,18 @@ namespace SteamKit2
         /// <param name="details">The details pertaining to the response.</param>
         public void SendMachineAuthResponse( MachineAuthDetails details )
         {
+            if ( details == null )
+            {
+                throw new ArgumentNullException( nameof(details) );
+            }
+
             var response = new ClientMsgProtobuf<CMsgClientUpdateMachineAuthResponse>( EMsg.ClientUpdateMachineAuthResponse );
 
             // so we respond to the correct message
-            response.ProtoHeader.jobid_target = details.JobID;
+            if ( details.JobID != null )
+            {
+                response.ProtoHeader.jobid_target = details.JobID;
+            }
 
             response.Body.cubwrote = ( uint )details.BytesWritten;
             response.Body.eresult = ( uint )details.Result;
@@ -460,6 +483,11 @@ namespace SteamKit2
         /// <param name="callback">The callback containing the new Login Key.</param>
         public void AcceptNewLoginKey( LoginKeyCallback callback )
         {
+            if ( callback == null )
+            {
+                throw new ArgumentNullException( nameof(callback) );
+            }
+
             var acceptance = new ClientMsgProtobuf<CMsgClientNewLoginKeyAccepted>( EMsg.ClientNewLoginKeyAccepted );
             acceptance.Body.unique_id = callback.UniqueID;
 
@@ -472,8 +500,12 @@ namespace SteamKit2
         /// <param name="packetMsg">The packet message that contains the data.</param>
         public override void HandleMsg( IPacketMsg packetMsg )
         {
-            Action<IPacketMsg> handlerFunc;
-            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out handlerFunc );
+            if ( packetMsg == null )
+            {
+                throw new ArgumentNullException( nameof(packetMsg) );
+            }
+
+            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out var handlerFunc );
 
             if ( !haveFunc )
             {
@@ -548,6 +580,12 @@ namespace SteamKit2
             var callback = new AccountInfoCallback( accInfo.Body );
             this.Client.PostCallback( callback );
         }
+        void HandleEmailAddrInfo(IPacketMsg packetMsg)
+        {
+            var emailAddrInfo = new ClientMsgProtobuf<CMsgClientEmailAddrInfo>(packetMsg);
+            var callback = new EmailAddrInfoCallback(emailAddrInfo.Body);
+            this.Client.PostCallback(callback);
+        }
         void HandleWalletInfo( IPacketMsg packetMsg )
         {
             var walletInfo = new ClientMsgProtobuf<CMsgClientWalletInfoUpdate>( packetMsg );
@@ -558,7 +596,6 @@ namespace SteamKit2
         void HandleWebAPIUserNonce( IPacketMsg packetMsg )
         {
             var userNonce = new ClientMsgProtobuf<CMsgClientRequestWebAPIAuthenticateUserNonceResponse>( packetMsg );
-
             var callback = new WebAPIUserNonceCallback(userNonce.TargetJobID, userNonce.Body);
             this.Client.PostCallback( callback );
         }

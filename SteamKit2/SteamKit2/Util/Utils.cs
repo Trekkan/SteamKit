@@ -6,11 +6,14 @@
 
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using SteamKit2.Internal;
 
 namespace SteamKit2
 {
@@ -23,7 +26,8 @@ namespace SteamKit2
                       ).ToString();
         }
 
-        public static byte[] DecodeHexString(string hex)
+        [return: NotNullIfNotNull("hex")]
+        public static byte[]? DecodeHexString(string? hex)
         {
             if (hex == null)
                 return null;
@@ -117,7 +121,7 @@ namespace SteamKit2
 
                 case PlatformID.Unix:
                     {
-                        if ( IsRunningOnDarwin() )
+                        if ( IsMacOS() )
                         {
                             switch ( ver.Major )
                             {
@@ -138,6 +142,18 @@ namespace SteamKit2
 
                                 case 16:
                                     return EOSType.MacOS1012; // Sierra
+                                    
+                                case 17:
+                                    return EOSType.Macos1013; // High Sierra
+
+                                case 18:
+                                    return EOSType.Macos1014; // Mojave
+
+                                case 19:
+                                    return EOSType.Macos1015; // Catalina
+                                
+                                case 20:
+                                    return EOSType.MacOS11; // Big Sur
 
                                 default:
                                     return EOSType.MacOSUnknown;
@@ -149,51 +165,18 @@ namespace SteamKit2
                         }
                     }
 
-                // Not currently used by Mono. Maybe .NET Core will use this someday?
-                case PlatformID.MacOSX:
-                    return EOSType.MacOSUnknown;
-
                 default:
                     return EOSType.Unknown;
             }
         }
 
-        public static bool IsRunningOnDarwin()
-        {
-            // Replace with a safer way if one exists in the future, such as if
-            // Mono actually decides to use PlatformID.MacOSX
-            var buffer = IntPtr.Zero;
-            try
-            {
-                buffer = Marshal.AllocHGlobal( 8192 );
-                if ( uname( buffer ) == 0 )
-                {
-                    var kernelName = Marshal.PtrToStringAnsi( buffer );
-                    if ( kernelName == "Darwin" )
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch
-            {
-            }
-            finally
-            {
-                if ( buffer != IntPtr.Zero )
-                    Marshal.FreeHGlobal( buffer );
-            }
-
-            return false;
-        }
-
-        [DllImport ("libc")]
-        static extern int uname (IntPtr buf);
+        public static bool IsMacOS()
+            => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 
         public static T[] GetAttributes<T>( this Type type, bool inherit = false )
             where T : Attribute
         {
-            return type.GetCustomAttributes( typeof( T ), inherit ) as T[];
+            return (T[])type.GetTypeInfo().GetCustomAttributes( typeof( T ), inherit );
         }
     }
 
@@ -370,10 +353,10 @@ namespace SteamKit2
     {
         public static IPAddress GetLocalIP(Socket activeSocket)
         {
-            IPEndPoint ipEndPoint = activeSocket.LocalEndPoint as IPEndPoint;
+            var ipEndPoint = activeSocket.LocalEndPoint as IPEndPoint;
 
             if ( ipEndPoint == null || ipEndPoint.Address == IPAddress.Any )
-                throw new Exception( "Socket not connected" );
+                throw new InvalidOperationException( "Socket not connected" );
 
             return ipEndPoint.Address;
         }
@@ -385,7 +368,8 @@ namespace SteamKit2
 
             return new IPAddress( addrBytes );
         }
-        public static uint GetIPAddress( IPAddress ipAddr )
+
+        public static uint GetIPAddressAsUInt( IPAddress ipAddr )
         {
             byte[] addrBytes = ipAddr.GetAddressBytes();
             Array.Reverse( addrBytes );
@@ -393,43 +377,94 @@ namespace SteamKit2
             return BitConverter.ToUInt32( addrBytes, 0 );
         }
 
+        public static IPAddress GetIPAddress( this CMsgIPAddress ipAddr )
+        {
+            if ( ipAddr.ShouldSerializev6() )
+            {
+                return new IPAddress( ipAddr.v6 );
+            }
+            else
+            {
+                return GetIPAddress( ipAddr.v4 );
+            }
+        }
 
-        public static uint EndianSwap( uint input )
+        public static CMsgIPAddress GetMsgIPAddress( IPAddress ipAddr )
         {
-            return ( uint )IPAddress.NetworkToHostOrder( ( int )input );
+            var msgIpAddress = new CMsgIPAddress();
+            byte[] addrBytes = ipAddr.GetAddressBytes();
+
+            if ( ipAddr.AddressFamily == AddressFamily.InterNetworkV6 )
+            {
+                msgIpAddress.v6 = addrBytes;
+            }
+            else
+            {
+                Array.Reverse( addrBytes );
+
+                msgIpAddress.v4 = BitConverter.ToUInt32( addrBytes, 0 );
+            }
+
+            return msgIpAddress;
         }
-        public static ulong EndianSwap( ulong input )
+
+        public static CMsgIPAddress ObfuscatePrivateIP( this CMsgIPAddress msgIpAddress )
         {
-            return ( ulong )IPAddress.NetworkToHostOrder( ( long )input );
+            var localIp = msgIpAddress;
+
+            if ( localIp.ShouldSerializev6() )
+            {
+                localIp.v6[ 0 ] ^= 0x0D;
+                localIp.v6[ 1 ] ^= 0xF0;
+                localIp.v6[ 2 ] ^= 0xAD;
+                localIp.v6[ 3 ] ^= 0xBA;
+
+                localIp.v6[ 4 ] ^= 0x0D;
+                localIp.v6[ 5 ] ^= 0xF0;
+                localIp.v6[ 6 ] ^= 0xAD;
+                localIp.v6[ 7 ] ^= 0xBA;
+
+                localIp.v6[ 8 ] ^= 0x0D;
+                localIp.v6[ 9 ] ^= 0xF0;
+                localIp.v6[ 10 ] ^= 0xAD;
+                localIp.v6[ 11 ] ^= 0xBA;
+
+                localIp.v6[ 12 ] ^= 0x0D;
+                localIp.v6[ 13 ] ^= 0xF0;
+                localIp.v6[ 14 ] ^= 0xAD;
+                localIp.v6[ 15 ] ^= 0xBA;
+            }
+            else
+            {
+                localIp.v4 ^= MsgClientLogon.ObfuscationMask;
+            }
+
+            return localIp;
         }
-        public static ushort EndianSwap( ushort input )
+
+        public static bool TryParseIPEndPoint( string stringValue, [NotNullWhen( true )] out IPEndPoint? endPoint )
         {
-            return ( ushort )IPAddress.NetworkToHostOrder( ( short )input );
-        }
-        public static bool TryParseIPEndPoint(string stringValue, out IPEndPoint endPoint)
-        {
-            var endpointParts = stringValue.Split(':');
-            if (endpointParts.Length != 2)
+            var colonPosition = stringValue.LastIndexOf( ':' );
+
+            if ( colonPosition == -1 )
             {
                 endPoint = null;
                 return false;
             }
 
-            IPAddress address;
-            if (!IPAddress.TryParse(endpointParts[0], out address))
+            if ( !IPAddress.TryParse( stringValue.Substring( 0, colonPosition ), out var address ) )
             {
                 endPoint = null;
                 return false;
             }
 
-            int port;
-            if (!int.TryParse(endpointParts[1], out port))
+            if ( !ushort.TryParse( stringValue.Substring( colonPosition + 1 ), out var port ) )
             {
                 endPoint = null;
                 return false;
             }
 
-            endPoint = new IPEndPoint(address, port);
+            endPoint = new IPEndPoint( address, port );
             return true;
         }
     }

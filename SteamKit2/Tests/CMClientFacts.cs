@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using SteamKit2;
 using SteamKit2.Internal;
 using Xunit;
@@ -19,13 +18,13 @@ namespace Tests
                 EMsg.ChannelEncryptResult
             };
 
-            foreach(var emsg in messages)
+            foreach (var emsg in messages)
             {
                 var msgHdr = new MsgHdr { Msg = emsg };
 
                 var data = Serialize(msgHdr);
 
-                var packetMsg = CMClient.GetPacketMsg(data);
+                var packetMsg = CMClient.GetPacketMsg(data, DebugLogContext.Instance);
                 Assert.IsAssignableFrom<PacketMsg>(packetMsg);
             }
         }
@@ -37,7 +36,7 @@ namespace Tests
             var msgHdr = new MsgHdrProtoBuf { Msg = msg };
 
             var data = Serialize(msgHdr);
-            var packetMsg = CMClient.GetPacketMsg(data);
+            var packetMsg = CMClient.GetPacketMsg(data, DebugLogContext.Instance);
             Assert.IsAssignableFrom<PacketClientMsgProtobuf>(packetMsg);
         }
 
@@ -48,7 +47,7 @@ namespace Tests
             var msgHdr = new ExtendedClientMsgHdr { Msg = msg };
 
             var data = Serialize(msgHdr);
-            var packetMsg = CMClient.GetPacketMsg(data);
+            var packetMsg = CMClient.GetPacketMsg(data, DebugLogContext.Instance);
             Assert.IsAssignableFrom<PacketClientMsg>(packetMsg);
         }
 
@@ -60,47 +59,16 @@ namespace Tests
 
             var data = Serialize(msgHdr);
             Array.Copy(BitConverter.GetBytes(-1), 0, data, 4, 4);
-            var packetMsg = CMClient.GetPacketMsg(data);
+            var packetMsg = CMClient.GetPacketMsg(data, DebugLogContext.Instance);
             Assert.Null(packetMsg);
         }
 
         [Fact]
-        public void ServerLookupIsClearedWhenDisconnecting()
+        public void GetPacketMsgFailsWithTinyArray()
         {
-            var msg = new ClientMsgProtobuf<CMsgClientServerList>( EMsg.ClientServerList );
-            msg.Body.servers.Add( new CMsgClientServerList.Server
-            {
-                server_type = ( int )EServerType.CM,
-                server_ip = 0x7F000001, // 127.0.0.1
-                server_port = 1234
-            });
-
-            var client = new DummyCMClient();
-            client.HandleClientMsg( msg );
-
-            Assert.Equal( 1, client.GetServersOfType( EServerType.CM ).Count );
-
-            client.DummyDisconnect();
-            Assert.Equal( 0, client.GetServersOfType( EServerType.CM ).Count );
-        }
-
-        [Fact]
-        public void ServerLookupDoesNotAccumulateDuplicates()
-        {
-            var msg = new ClientMsgProtobuf<CMsgClientServerList>( EMsg.ClientServerList );
-            msg.Body.servers.Add( new CMsgClientServerList.Server
-            {
-                server_type = ( int )EServerType.CM,
-                server_ip = 0x7F000001, // 127.0.0.1
-                server_port = 1234
-            });
-
-            var client = new DummyCMClient();
-            client.HandleClientMsg( msg );
-            Assert.Equal( 1, client.GetServersOfType( EServerType.CM ).Count );
-
-            client.HandleClientMsg( msg );
-            Assert.Equal( 1, client.GetServersOfType( EServerType.CM ).Count );
+            var data = new byte[3];
+            var packetMsg = CMClient.GetPacketMsg(data, DebugLogContext.Instance);
+            Assert.Null(packetMsg);
         }
 
         static byte[] Serialize(ISteamSerializableHeader hdr)
@@ -115,8 +83,8 @@ namespace Tests
         class DummyCMClient : CMClient
         {
             public DummyCMClient()
+                : base( SteamConfiguration.CreateDefault(), "Dummy" )
             {
-                PretendEncryptionIsSetUp();
             }
 
             public void DummyDisconnect()
@@ -126,13 +94,7 @@ namespace Tests
             }
 
             public void HandleClientMsg( IClientMsg clientMsg )
-                => OnClientMsgReceived( GetPacketMsg( clientMsg.Serialize() ) );
-
-            void PretendEncryptionIsSetUp()
-            {
-                var field = typeof( CMClient ).GetField( "encryptionSetup", BindingFlags.Instance | BindingFlags.NonPublic );
-                field.SetValue( this, true );
-            }
+                => OnClientMsgReceived( GetPacketMsg( clientMsg.Serialize(), this ) );
         }
     }
 }

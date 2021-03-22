@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -13,20 +13,19 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0C1A526F-2D1D-43E0-B7F8-25D3C4E065BB}</ProjectGuid>
     <RootNamespace>NetHook2</RootNamespace>
-    <WindowsTargetPlatformVersion>
-    </WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -50,12 +49,23 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <ZLibVersion>1.2.11</ZLibVersion>
+    <ProtobufVersion>3.15.6</ProtobufVersion>
+    <ProtobufLibraryName Condition="'$(Configuration)' == 'Debug'">libprotobufd.lib</ProtobufLibraryName>
+    <ProtobufLibraryName Condition="'$(ProtobufLibraryName)' == ''">libprotobuf.lib</ProtobufLibraryName>
   </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\native-dependencies\protobuf-$(ProtobufVersion)\src;..\native-dependencies\zlib-bins;..\native-dependencies\zlib-$(ZLibVersion);.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\native-dependencies\protobuf-bins\$(Configuration);..\native-dependencies\zlib-bins\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(ProtobufLibraryName);zlibstatic.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>
       </BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -65,15 +75,13 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/SAFESEH:NO %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/SAFESEH:NO /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
@@ -87,7 +95,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>libprotobuf_r.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -97,6 +104,7 @@
     <ClCompile Include="csimplescan.cpp" />
     <ClCompile Include="injector.cpp" />
     <ClCompile Include="logger.cpp" />
+    <ClCompile Include="net.cpp" />
     <ClCompile Include="nethook.cpp" />
     <ClCompile Include="sedebug.cpp" />
     <ClCompile Include="sigscan.cpp" />
@@ -111,12 +119,14 @@
     <ClInclude Include="csimplescan.h" />
     <ClInclude Include="detours.h" />
     <ClInclude Include="logger.h" />
+    <ClInclude Include="net.h" />
     <ClInclude Include="sedebug.h" />
     <ClInclude Include="sigscan.h" />
     <ClInclude Include="steammessages_base.pb.h" />
     <ClInclude Include="steam\clientmsgs.h" />
     <ClInclude Include="steam\csteamid.h" />
     <ClInclude Include="steam\emsg.h" />
+    <ClInclude Include="steam\net.h" />
     <ClInclude Include="steam\steamtypes.h" />
     <ClInclude Include="steam\udppkt.h" />
     <ClInclude Include="nh2_string.h" />
@@ -124,7 +134,6 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="detours.lib" />
-    <Library Include="zlib.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

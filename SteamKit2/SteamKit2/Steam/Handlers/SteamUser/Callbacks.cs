@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using ProtoBuf;
 using SteamKit2.Internal;
 
 namespace SteamKit2
@@ -45,7 +46,7 @@ namespace SteamKit2
             /// <summary>
             /// Gets or sets the public IP of the client
             /// </summary>
-            public IPAddress PublicIP { get; private set; }
+            public IPAddress? PublicIP { get; private set; }
 
             /// <summary>
             /// Gets the Steam3 server time.
@@ -60,12 +61,12 @@ namespace SteamKit2
             /// <summary>
             /// Gets the client steam ID.
             /// </summary>
-            public SteamID ClientSteamID { get; private set; }
+            public SteamID? ClientSteamID { get; private set; }
 
             /// <summary>
             /// Gets the email domain.
             /// </summary>
-            public string EmailDomain { get; private set; }
+            public string? EmailDomain { get; private set; }
 
             /// <summary>
             /// Gets the Steam2 CellID.
@@ -82,27 +83,22 @@ namespace SteamKit2
             /// This is used for authenticated content downloads in Steam2.
             /// This field will only be set when <see cref="LogOnDetails.RequestSteam2Ticket"/> has been set to <c>true</c>.
             /// </summary>
-            public byte[] Steam2Ticket { get; private set; }
-
-            /// <summary>
-            /// Gets a value indicating whether the client should use PICS.
-            /// </summary>
-            public bool UsePICS { get; private set; }
+            public byte[]? Steam2Ticket { get; private set; }
 
             /// <summary>
             /// Gets the WebAPI authentication user nonce.
             /// </summary>
-            public string WebAPIUserNonce { get; private set; }
+            public string? WebAPIUserNonce { get; private set; }
 
             /// <summary>
             /// Gets the IP country code.
             /// </summary>
-            public string IPCountryCode { get; private set; }
+            public string? IPCountryCode { get; private set; }
 
             /// <summary>
             /// Gets the vanity URL.
             /// </summary>
-            public string VanityURL { get; private set; }
+            public string? VanityURL { get; private set; }
 
             /// <summary>
             /// Gets the threshold for login failures before Steam wants the client to migrate to a new CM.
@@ -113,6 +109,10 @@ namespace SteamKit2
             /// </summary>
             public int NumDisconnectsToMigrate { get; private set; }
 
+            /// <summary>
+            /// Gets the Steam parental settings.
+            /// </summary>
+            public ParentalSettings? ParentalSettings { get; private set; }
 
             internal LoggedOnCallback( CMsgClientLogonResponse resp )
             {
@@ -122,7 +122,7 @@ namespace SteamKit2
                 this.OutOfGameSecsPerHeartbeat = resp.out_of_game_heartbeat_seconds;
                 this.InGameSecsPerHeartbeat = resp.in_game_heartbeat_seconds;
 
-                this.PublicIP = NetHelpers.GetIPAddress( resp.public_ip );
+                this.PublicIP = resp.public_ip?.GetIPAddress();
 
                 this.ServerTime = DateUtils.DateTimeFromUnixTime( resp.rtime32_server_time );
 
@@ -141,12 +141,18 @@ namespace SteamKit2
 
                 this.WebAPIUserNonce = resp.webapi_authenticate_user_nonce;
 
-                this.UsePICS = resp.use_pics;
-
                 this.VanityURL = resp.vanity_url;
 
                 this.NumLoginFailuresToMigrate = resp.count_loginfailures_to_migrate;
                 this.NumDisconnectsToMigrate = resp.count_disconnects_to_migrate;
+
+                if ( resp.parental_settings != null )
+                {
+                    using ( var ms = new MemoryStream( resp.parental_settings ) )
+                    {
+                        this.ParentalSettings = Serializer.Deserialize<ParentalSettings>( ms );
+                    }
+                }
             }
 
 
@@ -246,28 +252,9 @@ namespace SteamKit2
             public string Country { get; private set; }
 
             /// <summary>
-            /// Gets the salt used for the password.
-            /// </summary>
-            [Obsolete( "This field is no longer sent by Steam" )]
-            public byte[] PasswordSalt { get; private set; }
-            /// <summary>
-            /// Gets the SHA-1 disgest of the password.
-            /// </summary>
-            [Obsolete( "This field is no longer sent by Steam" )]
-            public byte[] PasswordSHADisgest { get; private set; }
-
-            /// <summary>
             /// Gets the count of SteamGuard authenticated computers.
             /// </summary>
             public int CountAuthedComputers { get; private set; }
-            /// <summary>
-            /// Gets a value indicating whether this account is locked with IPT.
-            /// </summary>
-            /// <value>
-            ///   <c>true</c> if this account is locked with IPT; otherwise, <c>false</c>.
-            /// </value>
-            [Obsolete( "This field is no longer sent by Steam" )]
-            public bool LockedWithIPT { get; private set; }
 
             /// <summary>
             /// Gets the account flags for this account.
@@ -299,6 +286,27 @@ namespace SteamKit2
         }
 
         /// <summary>
+        /// This callback is received when email information is recieved from the network.
+        /// </summary>
+        public sealed class EmailAddrInfoCallback : CallbackMsg
+        {
+            /// <summary>
+            /// Gets the email address of this account.
+            /// </summary>
+            public string EmailAddress { get; private set; }
+            /// <summary>
+            /// Gets a value indicating validated email or not.
+            /// </summary>
+            public bool IsValidated { get; private set; }
+
+            internal EmailAddrInfoCallback(CMsgClientEmailAddrInfo msg)
+            {
+                EmailAddress = msg.email_address;
+                IsValidated = msg.email_is_validated;
+            }
+        }
+
+        /// <summary>
         /// This callback is received when wallet info is recieved from the network.
         /// </summary>
         public sealed class WalletInfoCallback : CallbackMsg
@@ -315,10 +323,16 @@ namespace SteamKit2
             /// Gets the currency code for this wallet.
             /// </summary>
             public ECurrencyCode Currency { get; private set; }
+
             /// <summary>
-            /// Gets the balance of the wallet, in cents.
+            /// Gets the balance of the wallet as a 32-bit integer, in cents.
             /// </summary>
             public int Balance { get; private set; }
+
+            /// <summary>
+            /// Gets the balance of the wallet as a 64-bit integer, in cents.
+            /// </summary>
+            public long LongBalance { get; private set; }
 
 
             internal WalletInfoCallback( CMsgClientWalletInfoUpdate wallet )
@@ -327,6 +341,7 @@ namespace SteamKit2
 
                 Currency = ( ECurrencyCode )wallet.currency;
                 Balance = wallet.balance;
+                LongBalance = wallet.balance64;
             }
         }
 
@@ -347,11 +362,11 @@ namespace SteamKit2
                 /// <summary>
                 /// Gets the OTP identifier.
                 /// </summary>
-                public string Identifier { get; internal set; }
+                public string? Identifier { get; internal set; }
                 /// <summary>
                 /// Gets the OTP shared secret.
                 /// </summary>
-                public byte[] SharedSecret { get; internal set; }
+                public byte[]? SharedSecret { get; internal set; }
                 /// <summary>
                 /// Gets the OTP time drift.
                 /// </summary>

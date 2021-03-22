@@ -33,11 +33,11 @@ namespace SteamKit2
             /// <summary>
             /// Gets or sets the SHA-1 hash chunk id.
             /// </summary>
-            public byte[] ChunkID { get; set; }
+            public byte[]? ChunkID { get; set; }
             /// <summary>
             /// Gets or sets the expected Adler32 checksum of this chunk.
             /// </summary>
-            public byte[] Checksum { get; set; }
+            public byte[]? Checksum { get; set; }
             /// <summary>
             /// Gets or sets the chunk offset.
             /// </summary>
@@ -103,9 +103,13 @@ namespace SteamKit2
             internal FileData(string filename, EDepotFileFlag flag, ulong size, byte[] hash, bool encrypted, int numChunks)
             {
                 if (encrypted)
+                {
                     this.FileName = filename;
+                }
                 else
+                {
                     this.FileName = filename.Replace(altDirChar, Path.DirectorySeparatorChar);
+                }
 
                 this.Flags = flag;
                 this.TotalSize = size;
@@ -117,7 +121,7 @@ namespace SteamKit2
         /// <summary>
         /// Gets the list of files within this manifest.
         /// </summary>
-        public List<FileData> Files { get; private set; }
+        public List<FileData>? Files { get; private set; }
         /// <summary>
         /// Gets a value indicating whether filenames within this depot are encrypted.
         /// </summary>
@@ -125,13 +129,40 @@ namespace SteamKit2
         ///   <c>true</c> if the filenames are encrypted; otherwise, <c>false</c>.
         /// </value>
         public bool FilenamesEncrypted { get; private set; }
+        /// <summary>
+        /// Gets the depot id.
+        /// </summary>
+        public uint DepotID { get; private set; }
+        /// <summary>
+        /// Gets the manifest id.
+        /// </summary>
+        public ulong ManifestGID { get; private set; }
+        /// <summary>
+        /// Gets the depot creation time.
+        /// </summary>
+        public DateTime CreationTime { get; private set; }
+        /// <summary>
+        /// Gets the total uncompressed size of all files in this depot.
+        /// </summary>
+        public ulong TotalUncompressedSize { get; private set; }
+        /// <summary>
+        /// Gets the total compressed size of all files in this depot.
+        /// </summary>
+        public ulong TotalCompressedSize { get; private set; }
 
 
         internal DepotManifest(byte[] data)
         {
-            Deserialize(data);
+            InternalDeserialize(data);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DepotManifest"/> class.
+        /// Depot manifests may come from the Steam CDN or from Steam/depotcache/ manifest files.
+        /// </summary>
+        /// <param name="data">Raw depot manifest data to deserialize.</param>
+        /// <exception cref="InvalidDataException">Thrown if the given data is not something recognizable.</exception>
+        public static DepotManifest Deserialize(byte[] data) => new DepotManifest(data);
 
         /// <summary>
         /// Attempts to decrypts file names with the given encryption key.
@@ -141,7 +172,11 @@ namespace SteamKit2
         public bool DecryptFilenames(byte[] encryptionKey)
         {
             if (!FilenamesEncrypted)
+            {
                 return true;
+            }
+
+            DebugLog.Assert( Files != null, nameof( DepotManifest ), "Files was null when attempting to decrypt filenames." );
 
             foreach (var file in Files)
             {
@@ -163,11 +198,11 @@ namespace SteamKit2
             return true;
         }
 
-        void Deserialize(byte[] data)
+        void InternalDeserialize(byte[] data)
         {
-            ContentManifestPayload payload = null;
-            ContentManifestMetadata metadata = null;
-            ContentManifestSignature signature = null;
+            ContentManifestPayload? payload = null;
+            ContentManifestMetadata? metadata = null;
+            ContentManifestSignature? signature = null;
 
             using ( var ms = new MemoryStream( data ) )
             using ( var br = new BinaryReader( ms ) )
@@ -213,7 +248,7 @@ namespace SteamKit2
                             break;
 
                         default:
-                            throw new NotImplementedException( string.Format( "Unrecognized magic value {0:X} in depot manifest.", magic ) );
+                            throw new InvalidDataException( $"Unrecognized magic value {magic:X} in depot manifest." );
                     }
                 }
             }
@@ -233,14 +268,19 @@ namespace SteamKit2
         {
             Files = new List<FileData>( manifest.Mapping.Count );
             FilenamesEncrypted = manifest.AreFileNamesEncrypted;
+            DepotID = manifest.DepotID;
+            ManifestGID = manifest.ManifestGID;
+            CreationTime = manifest.CreationTime;
+            TotalUncompressedSize = manifest.TotalUncompressedSize;
+            TotalCompressedSize = manifest.TotalCompressedSize;
 
             foreach (var file_mapping in manifest.Mapping)
             {
-                FileData filedata = new FileData(file_mapping.FileName, file_mapping.Flags, file_mapping.TotalSize, file_mapping.HashContent, FilenamesEncrypted, file_mapping.Chunks.Length);
+                FileData filedata = new FileData(file_mapping.FileName!, file_mapping.Flags, file_mapping.TotalSize, file_mapping.HashContent!, FilenamesEncrypted, file_mapping.Chunks!.Length);
 
                 foreach (var chunk in file_mapping.Chunks)
                 {
-                    filedata.Chunks.Add( new ChunkData( chunk.ChunkGID, chunk.Checksum, chunk.Offset, chunk.CompressedSize, chunk.DecompressedSize ) );
+                    filedata.Chunks.Add( new ChunkData( chunk.ChunkGID!, chunk.Checksum!, chunk.Offset, chunk.CompressedSize, chunk.DecompressedSize ) );
                 }
 
                 Files.Add(filedata);
@@ -267,6 +307,11 @@ namespace SteamKit2
         void ParseProtobufManifestMetadata(ContentManifestMetadata metadata)
         {
             FilenamesEncrypted = metadata.filenames_encrypted;
+            DepotID = metadata.depot_id;
+            ManifestGID = metadata.gid_manifest;
+            CreationTime = DateUtils.DateTimeFromUnixTime( metadata.creation_time );
+            TotalUncompressedSize = metadata.cb_disk_original;
+            TotalCompressedSize = metadata.cb_disk_compressed;
         }
     }
 }

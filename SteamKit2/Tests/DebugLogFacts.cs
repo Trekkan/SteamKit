@@ -101,10 +101,65 @@ namespace Tests
             DebugLog.AddListener( ( category, msg ) =>
             {
                 Assert.Equal( "category", category );
-                Assert.Equal( "msg{0}msg", msg);
+                Assert.Equal( "msg{0}msg", msg );
             } );
 
             DebugLog.WriteLine( "category", "msg{0}msg" );
+        }
+
+        [Fact, DebugLogSetupTeardown]
+        public void DebugLogFormatsParams()
+        {
+            DebugLog.Enabled = true;
+            DebugLog.AddListener( ( category, msg ) =>
+            {
+                Assert.Equal( "category", category );
+                Assert.Equal( "msg1msg2", msg );
+            } );
+
+            var msgText = "msg";
+            var integer = 2;
+            DebugLog.WriteLine( "category", "msg{0}{1}{2}", 1, msgText, integer );
+        }
+
+        [Fact, DebugLogSetupTeardown]
+        public void GeneratedCMClientIDPrefixed()
+        {
+            DebugLog.Enabled = true;
+
+            string category = default;
+            string message = default;
+
+            DebugLog.AddListener( ( cat, msg ) =>
+            {
+                category = cat;
+                message = msg;
+            } );
+
+            var client = new SteamClient();
+            client.LogDebug( "MyCategory", "My {0}st message", 1 );
+            Assert.Equal( client.ID + "/MyCategory", category );
+            Assert.Equal( "My 1st message", message );
+        }
+
+        [Fact, DebugLogSetupTeardown]
+        public void CustomCMClientIDPrefixed()
+        {
+            DebugLog.Enabled = true;
+
+            string category = default;
+            string message = default;
+
+            DebugLog.AddListener( ( cat, msg ) =>
+            {
+                category = cat;
+                message = msg;
+            } );
+
+            var client = new SteamClient("My Custom Client");
+            client.LogDebug( "MyCategory", "My {0}st message", 1 );
+            Assert.Equal( "My Custom Client/MyCategory", category );
+            Assert.Equal( "My 1st message", message );
         }
     }
 }

@@ -20,10 +20,8 @@ namespace SteamKit2
 		JobHeartbeat = 123,
 		HubConnect = 124,
 		Subscribe = 126,
-		[Obsolete]
 		RouteMessage = 127,
 		[Obsolete]
-		RemoteSysID = 128,
 		AMCreateAccountResponse = 129,
 		WGRequest = 130,
 		WGResponse = 131,
@@ -32,11 +30,7 @@ namespace SteamKit2
 		WebAPIJobResponse = 134,
 		ClientSessionStart = 135,
 		ClientSessionEnd = 136,
-		[Obsolete( "renamed to ClientSessionUpdate" )]
-		ClientSessionUpdateAuthTicket = 137,
 		ClientSessionUpdate = 137,
-		[Obsolete]
-		StatsDeprecated = 138,
 		Ping = 139,
 		PingResponse = 140,
 		Stats = 141,
@@ -49,6 +43,8 @@ namespace SteamKit2
 		ClientPackageVersions = 148,
 		TimestampRequest = 149,
 		TimestampResponse = 150,
+		ServiceMethodCallFromClient = 151,
+		ServiceMethodSendToClient = 152,
 		BaseShell = 200,
 		AssignSysID = 200,
 		Exit = 201,
@@ -70,15 +66,19 @@ namespace SteamKit2
 		ShellSearchLogsResponse = 236,
 		ShellCheckWindowsUpdates = 237,
 		ShellCheckWindowsUpdatesResponse = 238,
-		[Obsolete]
-		ShellFlushUserLicenseCache = 239,
+		TestFlushDelayedSQL = 240,
+		TestFlushDelayedSQLResponse = 241,
+		EnsureExecuteScheduledTask_TEST = 242,
+		EnsureExecuteScheduledTaskResponse_TEST = 243,
+		UpdateScheduledTaskEnableState_TEST = 244,
+		UpdateScheduledTaskEnableStateResponse_TEST = 245,
+		ContentDescriptionDeltaUpdate = 246,
 		BaseGM = 300,
 		Heartbeat = 300,
 		ShellFailed = 301,
 		ExitShells = 307,
 		ExitShell = 308,
 		GracefulExitShell = 309,
-		NotifyWatchdog = 314,
 		LicenseProcessingComplete = 316,
 		SetTestFlag = 317,
 		QueuedEmailsComplete = 318,
@@ -91,50 +91,44 @@ namespace SteamKit2
 		GMLoadActivationCodes = 325,
 		GMQueueForFBS = 326,
 		GMSchemaConversionResults = 327,
-		[Obsolete]
-		GMSchemaConversionResultsResponse = 328,
 		GMWriteShellFailureToSQL = 329,
 		GMWriteStatsToSOS = 330,
 		GMGetServiceMethodRouting = 331,
 		GMGetServiceMethodRoutingResponse = 332,
 		GMConvertUserWallets = 333,
+		GMTestNextBuildSchemaConversion = 334,
+		GMTestNextBuildSchemaConversionResponse = 335,
+		ExpectShellRestart = 336,
+		HotFixProgress = 337,
 		BaseAIS = 400,
-		[Obsolete]
-		AISRefreshContentDescription = 401,
 		AISRequestContentDescription = 402,
 		AISUpdateAppInfo = 403,
-		[Obsolete( "renamed to AISUpdatePackageCosts" )]
-		AISUpdatePackageInfo = 404,
+		[Obsolete]
 		AISUpdatePackageCosts = 404,
 		AISGetPackageChangeNumber = 405,
 		AISGetPackageChangeNumberResponse = 406,
 		[Obsolete]
-		AISAppInfoTableChanged = 407,
 		AISUpdatePackageCostsResponse = 408,
+		[Obsolete]
 		AISCreateMarketingMessage = 409,
+		[Obsolete]
 		AISCreateMarketingMessageResponse = 410,
+		[Obsolete]
 		AISGetMarketingMessage = 411,
+		[Obsolete]
 		AISGetMarketingMessageResponse = 412,
+		[Obsolete]
 		AISUpdateMarketingMessage = 413,
+		[Obsolete]
 		AISUpdateMarketingMessageResponse = 414,
+		[Obsolete]
 		AISRequestMarketingMessageUpdate = 415,
+		[Obsolete]
 		AISDeleteMarketingMessage = 416,
-		[Obsolete]
-		AISGetMarketingTreatments = 419,
-		[Obsolete]
-		AISGetMarketingTreatmentsResponse = 420,
-		[Obsolete]
-		AISRequestMarketingTreatmentUpdate = 421,
-		[Obsolete]
-		AISTestAddPackage = 422,
 		AIGetAppGCFlags = 423,
 		AIGetAppGCFlagsResponse = 424,
 		AIGetAppList = 425,
 		AIGetAppListResponse = 426,
-		[Obsolete]
-		AIGetAppInfo = 427,
-		[Obsolete]
-		AIGetAppInfoResponse = 428,
 		AISGetCouponDefinition = 429,
 		AISGetCouponDefinitionResponse = 430,
 		AISUpdateSlaveContentDescription = 431,
@@ -143,8 +137,6 @@ namespace SteamKit2
 		BaseAM = 500,
 		AMUpdateUserBanRequest = 504,
 		AMAddLicense = 505,
-		[Obsolete]
-		AMBeginProcessingLicenses = 507,
 		AMSendSystemIMToUser = 508,
 		AMExtendLicense = 509,
 		AMAddMinutesToLicense = 510,
@@ -157,6 +149,7 @@ namespace SteamKit2
 		AMGetLegacyGameKeyResponse = 517,
 		AMFindHungTransactions = 518,
 		AMSetAccountTrustedRequest = 519,
+		[Obsolete]
 		AMCompletePurchase = 521,
 		AMCancelPurchase = 522,
 		AMNewChallenge = 523,
@@ -177,26 +170,22 @@ namespace SteamKit2
 		AMClanCleanupList = 538,
 		AMGetLicenses = 539,
 		AMGetLicensesResponse = 540,
+		AMSendCartRepurchase = 541,
+		AMSendCartRepurchaseResponse = 542,
 		AllowUserToPlayQuery = 550,
 		AllowUserToPlayResponse = 551,
 		AMVerfiyUser = 552,
 		AMClientNotPlaying = 553,
+		[Obsolete( "Renamed to AMClientRequestFriendship" )]
 		ClientRequestFriendship = 554,
+		AMClientRequestFriendship = 554,
 		AMRelayPublishStatus = 555,
-		[Obsolete]
-		AMResetCommunityContent = 556,
-		[Obsolete]
-		AMPrimePersonaStateCache = 557,
-		[Obsolete]
-		AMAllowUserContentQuery = 558,
-		[Obsolete]
-		AMAllowUserContentResponse = 559,
 		AMInitPurchaseResponse = 560,
 		AMRevokePurchaseResponse = 561,
-		[Obsolete]
-		AMLockProfile = 562,
 		AMRefreshGuestPasses = 563,
+		[Obsolete]
 		AMInviteUserToClan = 564,
+		[Obsolete]
 		AMAcknowledgeClanInvite = 565,
 		AMGrantGuestPasses = 566,
 		AMClanDataUpdated = 567,
@@ -225,10 +214,6 @@ namespace SteamKit2
 		AMSetAvatar = 591,
 		AMAuthenticateUser = 592,
 		AMAuthenticateUserResponse = 593,
-		[Obsolete]
-		AMGetAccountFriendsCount = 594,
-		[Obsolete]
-		AMGetAccountFriendsCountResponse = 595,
 		AMP2PIntroducerMessage = 596,
 		ClientChatAction = 597,
 		AMClientChatActionRelay = 598,
@@ -264,56 +249,26 @@ namespace SteamKit2
 		DRMEmptyGuidCache = 645,
 		DRMEmptyGuidCacheResponse = 646,
 		BaseCS = 650,
-		[Obsolete]
-		CSUserContentRequest = 652,
 		BaseClient = 700,
-		[Obsolete]
-		ClientLogOn_Deprecated = 701,
-		[Obsolete]
-		ClientAnonLogOn_Deprecated = 702,
 		ClientHeartBeat = 703,
 		ClientVACResponse = 704,
-		[Obsolete]
-		ClientGamesPlayed_obsolete = 705,
 		ClientLogOff = 706,
 		ClientNoUDPConnectivity = 707,
-		ClientInformOfCreateAccount = 708,
-		ClientAckVACBan = 709,
-		ClientConnectionStats = 710,
 		[Obsolete]
-		ClientInitPurchase = 711,
+		ClientInformOfCreateAccount = 708,
+		ClientConnectionStats = 710,
 		ClientPingResponse = 712,
 		ClientRemoveFriend = 714,
 		ClientGamesPlayedNoDataBlob = 715,
 		ClientChangeStatus = 716,
 		ClientVacStatusResponse = 717,
 		ClientFriendMsg = 718,
-		[Obsolete]
-		ClientGameConnect_obsolete = 719,
-		[Obsolete]
-		ClientGamesPlayed2_obsolete = 720,
-		[Obsolete]
-		ClientGameEnded_obsolete = 721,
-		[Obsolete]
-		ClientGetFinalPrice = 722,
 		ClientSystemIM = 726,
 		ClientSystemIMAck = 727,
 		ClientGetLicenses = 728,
-		[Obsolete]
-		ClientCancelLicense = 729,
 		ClientGetLegacyGameKey = 730,
-		[Obsolete]
-		ClientContentServerLogOn_Deprecated = 731,
 		ClientAckVACBan2 = 732,
-		[Obsolete]
-		ClientAckMessageByGID = 735,
 		ClientGetPurchaseReceipts = 736,
-		[Obsolete]
-		ClientAckPurchaseReceipt = 737,
-		[Obsolete]
-		ClientGamesPlayed3_obsolete = 738,
-		[Obsolete]
-		ClientSendGuestPass = 739,
 		ClientAckGuestPass = 740,
 		ClientRedeemGuestPass = 741,
 		ClientGamesPlayed = 742,
@@ -322,15 +277,8 @@ namespace SteamKit2
 		ClientAcknowledgeClanInvite = 745,
 		ClientPurchaseWithMachineID = 746,
 		ClientAppUsageEvent = 747,
-		[Obsolete]
-		ClientGetGiftTargetList = 748,
-		[Obsolete]
-		ClientGetGiftTargetListResponse = 749,
 		ClientLogOnResponse = 751,
-		ClientVACChallenge = 753,
 		ClientSetHeartbeatRate = 755,
-		[Obsolete]
-		ClientNotLoggedOnDeprecated = 756,
 		ClientLoggedOff = 757,
 		GSApprove = 758,
 		GSDeny = 759,
@@ -342,36 +290,17 @@ namespace SteamKit2
 		ClientPersonaState = 766,
 		ClientFriendsList = 767,
 		ClientAccountInfo = 768,
-		ClientVacStatusQuery = 770,
 		ClientNewsUpdate = 771,
 		ClientGameConnectDeny = 773,
 		GSStatusReply = 774,
-		[Obsolete]
-		ClientGetFinalPriceResponse = 775,
 		ClientGameConnectTokens = 779,
 		ClientLicenseList = 780,
-		[Obsolete]
-		ClientCancelLicenseResponse = 781,
 		ClientVACBanStatus = 782,
 		ClientCMList = 783,
 		ClientEncryptPct = 784,
 		ClientGetLegacyGameKeyResponse = 785,
-		[Obsolete]
-		ClientFavoritesList = 786,
-		[Obsolete]
-		CSUserContentApprove = 787,
-		[Obsolete]
-		CSUserContentDeny = 788,
-		[Obsolete]
-		ClientInitPurchaseResponse = 789,
 		ClientAddFriend = 791,
 		ClientAddFriendResponse = 792,
-		[Obsolete]
-		ClientInviteFriend = 793,
-		[Obsolete]
-		ClientInviteFriendResponse = 794,
-		[Obsolete]
-		ClientSendGuestPassResponse = 795,
 		ClientAckGuestPassResponse = 796,
 		ClientRedeemGuestPassResponse = 797,
 		ClientUpdateGuestPassesList = 798,
@@ -379,15 +308,11 @@ namespace SteamKit2
 		ClientChatInvite = 800,
 		ClientJoinChat = 801,
 		ClientChatMemberInfo = 802,
-		[Obsolete]
-		ClientLogOnWithCredentials_Deprecated = 803,
 		ClientPasswordChangeResponse = 805,
 		ClientChatEnter = 807,
 		ClientFriendRemovedFromSource = 808,
 		ClientCreateChat = 809,
 		ClientCreateChatResponse = 810,
-		[Obsolete]
-		ClientUpdateChatMetadata = 811,
 		ClientP2PIntroducerMessage = 813,
 		ClientChatActionResult = 814,
 		ClientRequestFriendData = 815,
@@ -399,11 +324,7 @@ namespace SteamKit2
 		ClientServiceModule = 830,
 		ClientServiceCall = 831,
 		ClientServiceCallResponse = 832,
-		ClientPackageInfoRequest = 833,
-		ClientPackageInfoResponse = 834,
 		ClientNatTraversalStatEvent = 839,
-		ClientAppInfoRequest = 840,
-		ClientAppInfoResponse = 841,
 		ClientSteamUsageEvent = 842,
 		ClientCheckPassword = 845,
 		ClientResetPassword = 846,
@@ -416,22 +337,11 @@ namespace SteamKit2
 		ClientGetAppOwnershipTicket = 857,
 		ClientGetAppOwnershipTicketResponse = 858,
 		ClientGetLobbyListResponse = 860,
-		[Obsolete]
-		ClientGetLobbyMetadata = 861,
-		[Obsolete]
-		ClientGetLobbyMetadataResponse = 862,
-		ClientVTTCert = 863,
-		ClientAppInfoUpdate = 866,
-		ClientAppInfoChanges = 867,
 		ClientServerList = 880,
 		ClientEmailChangeResponse = 891,
 		ClientSecretQAChangeResponse = 892,
 		ClientDRMBlobRequest = 896,
 		ClientDRMBlobResponse = 897,
-		[Obsolete]
-		ClientLookupKey = 898,
-		[Obsolete]
-		ClientLookupKeyResponse = 899,
 		BaseGameServer = 900,
 		GSDisconnectNotice = 901,
 		GSStatus = 903,
@@ -459,21 +369,7 @@ namespace SteamKit2
 		AdminCmdResponse = 1004,
 		AdminLogListenRequest = 1005,
 		AdminLogEvent = 1006,
-		[Obsolete]
-		LogSearchRequest = 1007,
-		[Obsolete]
-		LogSearchResponse = 1008,
-		[Obsolete]
-		LogSearchCancel = 1009,
 		UniverseData = 1010,
-		[Obsolete]
-		RequestStatHistory = 1014,
-		[Obsolete]
-		StatHistory = 1015,
-		[Obsolete]
-		AdminPwLogon = 1017,
-		[Obsolete]
-		AdminPwLogonResponse = 1018,
 		AdminSpew = 1019,
 		AdminConsoleTitle = 1020,
 		AdminGCSpew = 1023,
@@ -496,8 +392,6 @@ namespace SteamKit2
 		FBSRebootBox = 1110,
 		FBSSetBigBrotherMode = 1111,
 		FBSMinidumpServer = 1112,
-		[Obsolete]
-		FBSSetShellCount_obsolete = 1113,
 		FBSDeployHotFixPackage = 1114,
 		FBSDeployHotFixResponse = 1115,
 		FBSDownloadHotFix = 1116,
@@ -518,6 +412,7 @@ namespace SteamKit2
 		FBSBootstrapperGetPackageChunkResponse = 1131,
 		FBSBootstrapperPackageTransferProgress = 1132,
 		FBSRestartBootstrapper = 1133,
+		FBSPauseFrozenDumps = 1134,
 		BaseFileXfer = 1200,
 		FileXferRequest = 1200,
 		FileXferResponse = 1201,
@@ -533,57 +428,28 @@ namespace SteamKit2
 		ChannelEncryptResult = 1305,
 		BaseBS = 1400,
 		BSPurchaseStart = 1401,
-		[Obsolete]
 		BSPurchaseResponse = 1402,
-		[Obsolete]
-		BSSettleNOVA = 1404,
+		BSAuthenticateCCTrans = 1403,
+		BSAuthenticateCCTransResponse = 1404,
 		BSSettleComplete = 1406,
-		[Obsolete]
-		BSBannedRequest = 1407,
 		BSInitPayPalTxn = 1408,
 		BSInitPayPalTxnResponse = 1409,
 		BSGetPayPalUserInfo = 1410,
 		BSGetPayPalUserInfoResponse = 1411,
-		[Obsolete]
-		BSRefundTxn = 1413,
-		[Obsolete]
-		BSRefundTxnResponse = 1414,
-		[Obsolete]
-		BSGetEvents = 1415,
-		[Obsolete]
-		BSChaseRFRRequest = 1416,
 		BSPaymentInstrBan = 1417,
 		BSPaymentInstrBanResponse = 1418,
-		[Obsolete]
-		BSProcessGCReports = 1419,
-		[Obsolete]
-		BSProcessPPReports = 1420,
 		BSInitGCBankXferTxn = 1421,
 		BSInitGCBankXferTxnResponse = 1422,
-		[Obsolete]
-		BSQueryGCBankXferTxn = 1423,
-		[Obsolete]
-		BSQueryGCBankXferTxnResponse = 1424,
 		BSCommitGCTxn = 1425,
 		BSQueryTransactionStatus = 1426,
 		BSQueryTransactionStatusResponse = 1427,
-		[Obsolete]
-		BSQueryCBOrderStatus = 1428,
-		[Obsolete]
-		BSQueryCBOrderStatusResponse = 1429,
-		[Obsolete]
-		BSRunRedFlagReport = 1430,
 		BSQueryPaymentInstUsage = 1431,
 		BSQueryPaymentInstResponse = 1432,
 		BSQueryTxnExtendedInfo = 1433,
 		BSQueryTxnExtendedInfoResponse = 1434,
 		BSUpdateConversionRates = 1435,
-		[Obsolete]
-		BSProcessUSBankReports = 1436,
 		BSPurchaseRunFraudChecks = 1437,
 		BSPurchaseRunFraudChecksResponse = 1438,
-		[Obsolete]
-		BSStartShippingJobs = 1439,
 		BSQueryBankInformation = 1440,
 		BSQueryBankInformationResponse = 1441,
 		BSValidateXsollaSignature = 1445,
@@ -626,17 +492,24 @@ namespace SteamKit2
 		BSQueryFindCreditCardResponse = 1485,
 		BSStatusInquiryPOSAKey = 1486,
 		BSStatusInquiryPOSAKeyResponse = 1487,
+		[Obsolete]
 		BSValidateMoPaySignature = 1488,
+		[Obsolete]
 		BSValidateMoPaySignatureResponse = 1489,
+		[Obsolete]
 		BSMoPayConfirmProductDelivery = 1490,
+		[Obsolete]
 		BSMoPayConfirmProductDeliveryResponse = 1491,
+		[Obsolete]
 		BSGenerateMoPayMD5 = 1492,
+		[Obsolete]
 		BSGenerateMoPayMD5Response = 1493,
 		BSBoaCompraConfirmProductDelivery = 1494,
 		BSBoaCompraConfirmProductDeliveryResponse = 1495,
 		BSGenerateBoaCompraMD5 = 1496,
 		BSGenerateBoaCompraMD5Response = 1497,
 		BSCommitWPTxn = 1498,
+		BSCommitAdyenTxn = 1499,
 		BaseATS = 1500,
 		ATSStartStressTest = 1501,
 		ATSStopStressTest = 1502,
@@ -659,26 +532,26 @@ namespace SteamKit2
 		ATSCSPerfTestResponse = 1519,
 		BaseDP = 1600,
 		DPSetPublishingState = 1601,
-		[Obsolete]
-		DPGamePlayedStats = 1602,
 		DPUniquePlayersStat = 1603,
 		DPStreamingUniquePlayersStat = 1604,
+		[Obsolete]
 		DPVacInfractionStats = 1605,
+		[Obsolete]
 		DPVacBanStats = 1606,
 		DPBlockingStats = 1607,
 		DPNatTraversalStats = 1608,
 		[Obsolete]
-		DPSteamUsageEvent = 1609,
 		DPVacCertBanStats = 1610,
+		[Obsolete]
 		DPVacCafeBanStats = 1611,
 		DPCloudStats = 1612,
 		DPAchievementStats = 1613,
+		[Obsolete]
 		DPAccountCreationStats = 1614,
 		DPGetPlayerCount = 1615,
 		DPGetPlayerCountResponse = 1616,
 		DPGameServersPlayersStats = 1617,
 		[Obsolete]
-		DPDownloadRateStatistics = 1618,
 		DPFacebookStatistics = 1619,
 		ClientDPCheckSpecialSurvey = 1620,
 		ClientDPCheckSpecialSurveyResponse = 1621,
@@ -686,9 +559,8 @@ namespace SteamKit2
 		ClientDPSendSpecialSurveyResponseReply = 1623,
 		DPStoreSaleStatistics = 1624,
 		ClientDPUpdateAppJobReport = 1625,
-		[Obsolete]
-		ClientDPSteam2AppStarted = 1627,
 		DPUpdateContentEvent = 1626,
+		ClientDPUnsignedInstallScript = 1627,
 		DPPartnerMicroTxns = 1628,
 		DPPartnerMicroTxnsResponse = 1629,
 		ClientDPContentStatsReport = 1630,
@@ -696,72 +568,23 @@ namespace SteamKit2
 		BaseCM = 1700,
 		CMSetAllowState = 1701,
 		CMSpewAllowState = 1702,
-		[Obsolete]
-		CMAppInfoResponseDeprecated = 1703,
-		[Obsolete]
-		BaseDSS = 1800,
-		[Obsolete]
-		DSSNewFile = 1801,
-		[Obsolete]
-		DSSCurrentFileList = 1802,
-		[Obsolete]
-		DSSSynchList = 1803,
-		[Obsolete]
-		DSSSynchListResponse = 1804,
-		[Obsolete]
-		DSSSynchSubscribe = 1805,
-		[Obsolete]
-		DSSSynchUnsubscribe = 1806,
-		[Obsolete]
-		BaseEPM = 1900,
-		[Obsolete]
-		EPMStartProcess = 1901,
-		[Obsolete]
-		EPMStopProcess = 1902,
-		[Obsolete]
-		EPMRestartProcess = 1903,
+		CMSessionRejected = 1703,
+		CMSetSecrets = 1704,
+		CMGetSecrets = 1705,
 		BaseGC = 2200,
-		[Obsolete]
-		GCSendClient = 2200,
-		[Obsolete]
-		AMRelayToGC = 2201,
-		[Obsolete]
-		GCUpdatePlayedState = 2202,
 		GCCmdRevive = 2203,
-		[Obsolete]
-		GCCmdBounce = 2204,
-		[Obsolete]
-		GCCmdForceBounce = 2205,
 		GCCmdDown = 2206,
 		GCCmdDeploy = 2207,
 		GCCmdDeployResponse = 2208,
 		GCCmdSwitch = 2209,
 		AMRefreshSessions = 2210,
-		[Obsolete]
-		GCUpdateGSState = 2211,
 		GCAchievementAwarded = 2212,
 		GCSystemMessage = 2213,
-		[Obsolete]
-		GCValidateSession = 2214,
-		[Obsolete]
-		GCValidateSessionResponse = 2215,
 		GCCmdStatus = 2216,
-		[Obsolete]
-		GCRegisterWebInterfaces = 2217,
-		[Obsolete]
-		GCRegisterWebInterfaces_Deprecated = 2217,
-		[Obsolete]
-		GCGetAccountDetails = 2218,
-		[Obsolete]
-		GCGetAccountDetails_DEPRECATED = 2218,
 		GCInterAppMessage = 2219,
 		GCGetEmailTemplate = 2220,
 		GCGetEmailTemplateResponse = 2221,
-		[Obsolete( "renamed to GCHRelay" )]
-		ISRelayToGCH = 2222,
 		GCHRelay = 2222,
-		[Obsolete( "renamed to GCHRelayToClient" )]
-		GCHRelayClientToIS = 2223,
 		GCHRelayToClient = 2223,
 		GCHUpdateSession = 2224,
 		GCHRequestUpdateSession = 2225,
@@ -777,80 +600,24 @@ namespace SteamKit2
 		GCHVacVerificationChange = 2235,
 		GCHAccountPhoneNumberChange = 2236,
 		GCHAccountTwoFactorChange = 2237,
+		GCHInviteUserToLobby = 2238,
 		BaseP2P = 2500,
 		P2PIntroducerMessage = 2502,
 		BaseSM = 2900,
 		SMExpensiveReport = 2902,
 		SMHourlyReport = 2903,
+		[Obsolete]
 		SMFishingReport = 2904,
 		SMPartitionRenames = 2905,
 		SMMonitorSpace = 2906,
-		[Obsolete]
-		SMGetSchemaConversionResults = 2907,
-		[Obsolete]
-		SMGetSchemaConversionResultsResponse = 2908,
+		SMTestNextBuildSchemaConversion = 2907,
+		SMTestNextBuildSchemaConversionResponse = 2908,
 		BaseTest = 3000,
 		FailServer = 3000,
 		JobHeartbeatTest = 3001,
 		JobHeartbeatTestResponse = 3002,
 		BaseFTSRange = 3100,
-		[Obsolete]
-		FTSGetBrowseCounts = 3101,
-		[Obsolete]
-		FTSGetBrowseCountsResponse = 3102,
-		[Obsolete]
-		FTSBrowseClans = 3103,
-		[Obsolete]
-		FTSBrowseClansResponse = 3104,
-		[Obsolete]
-		FTSSearchClansByLocation = 3105,
-		[Obsolete]
-		FTSSearchClansByLocationResponse = 3106,
-		[Obsolete]
-		FTSSearchPlayersByLocation = 3107,
-		[Obsolete]
-		FTSSearchPlayersByLocationResponse = 3108,
-		[Obsolete]
-		FTSClanDeleted = 3109,
-		[Obsolete]
-		FTSSearch = 3110,
-		[Obsolete]
-		FTSSearchResponse = 3111,
-		[Obsolete]
-		FTSSearchStatus = 3112,
-		[Obsolete]
-		FTSSearchStatusResponse = 3113,
-		[Obsolete]
-		FTSGetGSPlayStats = 3114,
-		[Obsolete]
-		FTSGetGSPlayStatsResponse = 3115,
-		[Obsolete]
-		FTSGetGSPlayStatsForServer = 3116,
-		[Obsolete]
-		FTSGetGSPlayStatsForServerResponse = 3117,
-		[Obsolete]
-		FTSReportIPUpdates = 3118,
 		BaseCCSRange = 3150,
-		[Obsolete]
-		CCSGetComments = 3151,
-		[Obsolete]
-		CCSGetCommentsResponse = 3152,
-		[Obsolete]
-		CCSAddComment = 3153,
-		[Obsolete]
-		CCSAddCommentResponse = 3154,
-		[Obsolete]
-		CCSDeleteComment = 3155,
-		[Obsolete]
-		CCSDeleteCommentResponse = 3156,
-		[Obsolete]
-		CCSPreloadComments = 3157,
-		[Obsolete]
-		CCSNotifyCommentCount = 3158,
-		[Obsolete]
-		CCSGetCommentsForNews = 3159,
-		[Obsolete]
-		CCSGetCommentsForNewsResponse = 3160,
 		CCSDeleteAllCommentsByAuthor = 3161,
 		CCSDeleteAllCommentsByAuthorResponse = 3162,
 		BaseLBSRange = 3200,
@@ -875,62 +642,88 @@ namespace SteamKit2
 		OGSEndSessionResponse = 3404,
 		OGSWriteAppSessionRow = 3406,
 		BaseBRP = 3600,
+		[Obsolete]
 		BRPStartShippingJobs = 3601,
+		[Obsolete]
 		BRPProcessUSBankReports = 3602,
+		[Obsolete]
 		BRPProcessGCReports = 3603,
+		[Obsolete]
 		BRPProcessPPReports = 3604,
 		[Obsolete]
-		BRPSettleNOVA = 3605,
-		[Obsolete]
-		BRPSettleCB = 3606,
 		BRPCommitGC = 3607,
+		[Obsolete]
 		BRPCommitGCResponse = 3608,
+		[Obsolete]
 		BRPFindHungTransactions = 3609,
+		[Obsolete]
 		BRPCheckFinanceCloseOutDate = 3610,
+		[Obsolete]
 		BRPProcessLicenses = 3611,
+		[Obsolete]
 		BRPProcessLicensesResponse = 3612,
+		[Obsolete]
 		BRPRemoveExpiredPaymentData = 3613,
+		[Obsolete]
 		BRPRemoveExpiredPaymentDataResponse = 3614,
+		[Obsolete]
 		BRPConvertToCurrentKeys = 3615,
+		[Obsolete]
 		BRPConvertToCurrentKeysResponse = 3616,
+		[Obsolete]
 		BRPPruneCardUsageStats = 3617,
+		[Obsolete]
 		BRPPruneCardUsageStatsResponse = 3618,
+		[Obsolete]
 		BRPCheckActivationCodes = 3619,
+		[Obsolete]
 		BRPCheckActivationCodesResponse = 3620,
+		[Obsolete]
 		BRPCommitWP = 3621,
+		[Obsolete]
 		BRPCommitWPResponse = 3622,
+		[Obsolete]
 		BRPProcessWPReports = 3623,
+		[Obsolete]
 		BRPProcessPaymentRules = 3624,
+		[Obsolete]
 		BRPProcessPartnerPayments = 3625,
+		[Obsolete]
 		BRPCheckSettlementReports = 3626,
+		[Obsolete]
 		BRPPostTaxToAvalara = 3628,
 		BRPPostTransactionTax = 3629,
 		BRPPostTransactionTaxResponse = 3630,
+		[Obsolete]
 		BRPProcessIMReports = 3631,
 		BaseAMRange2 = 4000,
 		AMCreateChat = 4001,
 		AMCreateChatResponse = 4002,
-		[Obsolete]
-		AMUpdateChatMetadata = 4003,
-		[Obsolete]
-		AMPublishChatMetadata = 4004,
 		AMSetProfileURL = 4005,
 		AMGetAccountEmailAddress = 4006,
 		AMGetAccountEmailAddressResponse = 4007,
-		[Obsolete( "renamed to AMRequestClanData" )]
-		AMRequestFriendData = 4008,
 		AMRequestClanData = 4008,
 		AMRouteToClients = 4009,
 		AMLeaveClan = 4010,
 		AMClanPermissions = 4011,
 		AMClanPermissionsResponse = 4012,
+		[Obsolete( "renamed to AMCreateClanEventDummyForRateLimiting" )]
 		AMCreateClanEvent = 4013,
+		AMCreateClanEventDummyForRateLimiting = 4013,
+		[Obsolete]
 		AMCreateClanEventResponse = 4014,
+		[Obsolete( "renamed to AMUpdateClanEventDummyForRateLimiting" )]
 		AMUpdateClanEvent = 4015,
+		AMUpdateClanEventDummyForRateLimiting = 4015,
+		[Obsolete]
 		AMUpdateClanEventResponse = 4016,
+		[Obsolete]
 		AMGetClanEvents = 4017,
+		[Obsolete]
 		AMGetClanEventsResponse = 4018,
+		[Obsolete]
 		AMDeleteClanEvent = 4019,
+		[Obsolete]
 		AMDeleteClanEventResponse = 4020,
 		AMSetClanPermissionSettings = 4021,
 		AMSetClanPermissionSettingsResponse = 4022,
@@ -938,30 +731,6 @@ namespace SteamKit2
 		AMGetClanPermissionSettingsResponse = 4024,
 		AMPublishChatRoomInfo = 4025,
 		ClientChatRoomInfo = 4026,
-		[Obsolete]
-		AMCreateClanAnnouncement = 4027,
-		[Obsolete]
-		AMCreateClanAnnouncementResponse = 4028,
-		[Obsolete]
-		AMUpdateClanAnnouncement = 4029,
-		[Obsolete]
-		AMUpdateClanAnnouncementResponse = 4030,
-		[Obsolete]
-		AMGetClanAnnouncementsCount = 4031,
-		[Obsolete]
-		AMGetClanAnnouncementsCountResponse = 4032,
-		[Obsolete]
-		AMGetClanAnnouncements = 4033,
-		[Obsolete]
-		AMGetClanAnnouncementsResponse = 4034,
-		[Obsolete]
-		AMDeleteClanAnnouncement = 4035,
-		[Obsolete]
-		AMDeleteClanAnnouncementResponse = 4036,
-		[Obsolete]
-		AMGetSingleClanAnnouncement = 4037,
-		[Obsolete]
-		AMGetSingleClanAnnouncementResponse = 4038,
 		AMGetClanHistory = 4039,
 		AMGetClanHistoryResponse = 4040,
 		AMGetClanPermissionBits = 4041,
@@ -971,7 +740,9 @@ namespace SteamKit2
 		AMSessionInfoRequest = 4045,
 		AMSessionInfoResponse = 4046,
 		AMValidateWGToken = 4047,
+		[Obsolete]
 		AMGetSingleClanEvent = 4048,
+		[Obsolete]
 		AMGetSingleClanEventResponse = 4049,
 		AMGetClanRank = 4050,
 		AMGetClanRankResponse = 4051,
@@ -981,12 +752,11 @@ namespace SteamKit2
 		AMGetClanPOTWResponse = 4055,
 		AMSetClanPOTW = 4056,
 		AMSetClanPOTWResponse = 4057,
-		[Obsolete]
-		AMRequestChatMetadata = 4058,
 		AMDumpUser = 4059,
 		AMKickUserFromClan = 4060,
 		AMAddFounderToClan = 4061,
 		AMValidateWGTokenResponse = 4062,
+		[Obsolete]
 		AMSetCommunityState = 4063,
 		AMSetAccountDetails = 4064,
 		AMGetChatBanList = 4065,
@@ -997,11 +767,16 @@ namespace SteamKit2
 		AMGetAccountLinksResponse = 4070,
 		AMSetAccountLinks = 4071,
 		AMSetAccountLinksResponse = 4072,
+		[Obsolete( "renamed to UGSGetUserGameStats" )]
 		AMGetUserGameStats = 4073,
+		UGSGetUserGameStats = 4073,
+		[Obsolete( "renamed to UGSGetUserGameStatsResponse" )]
 		AMGetUserGameStatsResponse = 4074,
+		UGSGetUserGameStatsResponse = 4074,
 		AMCheckClanMembership = 4075,
 		AMGetClanMembers = 4076,
 		AMGetClanMembersResponse = 4077,
+		[Obsolete]
 		AMJoinPublicClan = 4078,
 		AMNotifyChatOfClanChange = 4079,
 		AMResubmitPurchase = 4080,
@@ -1012,16 +787,11 @@ namespace SteamKit2
 		AMChangeClanOwner = 4085,
 		AMCancelEasyCollect = 4086,
 		AMCancelEasyCollectResponse = 4087,
-		[Obsolete]
-		AMGetClanMembershipList = 4088,
-		[Obsolete]
-		AMGetClanMembershipListResponse = 4089,
 		AMClansInCommon = 4090,
 		AMClansInCommonResponse = 4091,
 		AMIsValidAccountID = 4092,
-		AMConvertClan = 4093,
 		[Obsolete]
-		AMGetGiftTargetListRelay = 4094,
+		AMConvertClan = 4093,
 		AMWipeFriendsList = 4095,
 		AMSetIgnored = 4096,
 		AMClansInCommonCountResponse = 4097,
@@ -1036,6 +806,7 @@ namespace SteamKit2
 		AMFindGSByIP = 4106,
 		AMFoundGSByIP = 4107,
 		AMGiftRevoked = 4108,
+		[Obsolete]
 		AMCreateAccountRecord = 4109,
 		AMUserClanList = 4110,
 		AMUserClanListResponse = 4111,
@@ -1046,7 +817,9 @@ namespace SteamKit2
 		AMGetCommunityPrivacyState = 4116,
 		AMGetCommunityPrivacyStateResponse = 4117,
 		AMCheckClanInviteRateLimiting = 4118,
+		[Obsolete( "renamed to UGSGetUserAchievementStatus" )]
 		AMGetUserAchievementStatus = 4119,
+		UGSGetUserAchievementStatus = 4119,
 		AMGetIgnored = 4120,
 		AMGetIgnoredResponse = 4121,
 		AMSetIgnoredResponse = 4122,
@@ -1056,42 +829,29 @@ namespace SteamKit2
 		AMServiceModulesCache = 4126,
 		AMServiceModulesCall = 4127,
 		AMServiceModulesCallResponse = 4128,
+		[Obsolete]
 		AMGetCaptchaDataForIP = 4129,
+		[Obsolete]
 		AMGetCaptchaDataForIPResponse = 4130,
+		[Obsolete]
 		AMValidateCaptchaDataForIP = 4131,
+		[Obsolete]
 		AMValidateCaptchaDataForIPResponse = 4132,
+		[Obsolete]
 		AMTrackFailedAuthByIP = 4133,
+		[Obsolete]
 		AMGetCaptchaDataByGID = 4134,
+		[Obsolete]
 		AMGetCaptchaDataByGIDResponse = 4135,
-		[Obsolete]
-		AMGetLobbyList = 4136,
-		[Obsolete]
-		AMGetLobbyListResponse = 4137,
-		[Obsolete]
-		AMGetLobbyMetadata = 4138,
-		[Obsolete]
-		AMGetLobbyMetadataResponse = 4139,
 		CommunityAddFriendNews = 4140,
-		[Obsolete]
-		AMAddClanNews = 4141,
-		[Obsolete]
-		AMWriteNews = 4142,
 		AMFindClanUser = 4143,
 		AMFindClanUserResponse = 4144,
 		AMBanFromChat = 4145,
-		[Obsolete]
-		AMGetUserHistoryResponse = 4146,
 		AMGetUserNewsSubscriptions = 4147,
 		AMGetUserNewsSubscriptionsResponse = 4148,
 		AMSetUserNewsSubscriptions = 4149,
-		[Obsolete]
-		AMGetUserNews = 4150,
-		[Obsolete]
-		AMGetUserNewsResponse = 4151,
 		AMSendQueuedEmails = 4152,
 		AMSetLicenseFlags = 4153,
-		[Obsolete]
-		AMGetUserHistory = 4154,
 		CommunityDeleteUserNews = 4155,
 		AMAllowUserFilesRequest = 4156,
 		AMAllowUserFilesResponse = 4157,
@@ -1101,92 +861,43 @@ namespace SteamKit2
 		AMCheckClanMembershipResponse = 4161,
 		AMProbeClanMembershipList = 4162,
 		AMProbeClanMembershipListResponse = 4163,
+		UGSGetUserAchievementStatusResponse = 4164,
 		AMGetFriendsLobbies = 4165,
 		AMGetFriendsLobbiesResponse = 4166,
 		AMGetUserFriendNewsResponse = 4172,
 		CommunityGetUserFriendNews = 4173,
 		AMGetUserClansNewsResponse = 4174,
 		AMGetUserClansNews = 4175,
-		[Obsolete]
-		AMStoreInitPurchase = 4176,
-		[Obsolete]
-		AMStoreInitPurchaseResponse = 4177,
-		[Obsolete]
-		AMStoreGetFinalPrice = 4178,
-		[Obsolete]
-		AMStoreGetFinalPriceResponse = 4179,
-		[Obsolete]
-		AMStoreCompletePurchase = 4180,
-		[Obsolete]
-		AMStoreCancelPurchase = 4181,
-		[Obsolete]
-		AMStorePurchaseResponse = 4182,
-		[Obsolete]
-		AMCreateAccountRecordInSteam3 = 4183,
 		AMGetPreviousCBAccount = 4184,
 		AMGetPreviousCBAccountResponse = 4185,
-		[Obsolete]
-		AMUpdateBillingAddress = 4186,
-		[Obsolete]
-		AMUpdateBillingAddressResponse = 4187,
-		[Obsolete]
-		AMGetBillingAddress = 4188,
-		[Obsolete]
-		AMGetBillingAddressResponse = 4189,
 		AMGetUserLicenseHistory = 4190,
 		AMGetUserLicenseHistoryResponse = 4191,
 		AMSupportChangePassword = 4194,
 		AMSupportChangeEmail = 4195,
-		[Obsolete]
-		AMSupportChangeSecretQA = 4196,
 		AMResetUserVerificationGSByIP = 4197,
 		AMUpdateGSPlayStats = 4198,
 		AMSupportEnableOrDisable = 4199,
-		[Obsolete]
-		AMGetComments = 4200,
-		[Obsolete]
-		AMGetCommentsResponse = 4201,
-		[Obsolete]
-		AMAddComment = 4202,
-		[Obsolete]
-		AMAddCommentResponse = 4203,
-		[Obsolete]
-		AMDeleteComment = 4204,
-		[Obsolete]
-		AMDeleteCommentResponse = 4205,
 		AMGetPurchaseStatus = 4206,
 		AMSupportIsAccountEnabled = 4209,
 		AMSupportIsAccountEnabledResponse = 4210,
+		[Obsolete( "renamed to UGSGetUserStats" )]
 		AMGetUserStats = 4211,
+		UGSGetUserStats = 4211,
 		AMSupportKickSession = 4212,
 		AMGSSearch = 4213,
 		MarketingMessageUpdate = 4216,
+		[Obsolete( "renamed to ChatServerRouteFriendMsg" )]
 		AMRouteFriendMsg = 4219,
+		ChatServerRouteFriendMsg = 4219,
 		AMTicketAuthRequestOrResponse = 4220,
 		AMVerifyDepotManagementRights = 4222,
 		AMVerifyDepotManagementRightsResponse = 4223,
 		AMAddFreeLicense = 4224,
-		[Obsolete]
-		AMGetUserFriendsMinutesPlayed = 4225,
-		[Obsolete]
-		AMGetUserFriendsMinutesPlayedResponse = 4226,
-		[Obsolete]
-		AMGetUserMinutesPlayed = 4227,
-		[Obsolete]
-		AMGetUserMinutesPlayedResponse = 4228,
 		AMValidateEmailLink = 4231,
 		AMValidateEmailLinkResponse = 4232,
-		[Obsolete]
-		AMAddUsersToMarketingTreatment = 4234,
+		[Obsolete( "renamed to UGSStoreUserStats" )]
 		AMStoreUserStats = 4236,
-		[Obsolete]
-		AMGetUserGameplayInfo = 4237,
-		[Obsolete]
-		AMGetUserGameplayInfoResponse = 4238,
-		[Obsolete]
-		AMGetCardList = 4239,
-		[Obsolete]
-		AMGetCardListResponse = 4240,
+		UGSStoreUserStats = 4236,
 		AMDeleteStoredCard = 4241,
 		AMRevokeLegacyGameKeys = 4242,
 		AMGetWalletDetails = 4244,
@@ -1198,22 +909,21 @@ namespace SteamKit2
 		AMGetWalletConversionRateResponse = 4250,
 		AMConvertWallet = 4251,
 		AMConvertWalletResponse = 4252,
-		[Obsolete]
-		AMRelayGetFriendsWhoPlayGame = 4253,
-		[Obsolete]
-		AMRelayGetFriendsWhoPlayGameResponse = 4254,
 		AMSetPreApproval = 4255,
 		AMSetPreApprovalResponse = 4256,
-		[Obsolete]
-		AMMarketingTreatmentUpdate = 4257,
 		AMCreateRefund = 4258,
+		[Obsolete]
 		AMCreateRefundResponse = 4259,
 		AMCreateChargeback = 4260,
+		[Obsolete]
 		AMCreateChargebackResponse = 4261,
 		AMCreateDispute = 4262,
+		[Obsolete]
 		AMCreateDisputeResponse = 4263,
 		AMClearDispute = 4264,
+		[Obsolete( "renamed to AMCreateFinancialAdjustment" )]
 		AMClearDisputeResponse = 4265,
+		AMCreateFinancialAdjustment = 4265,
 		AMPlayerNicknameList = 4266,
 		AMPlayerNicknameListResponse = 4267,
 		AMSetDRMTestConfig = 4268,
@@ -1221,13 +931,13 @@ namespace SteamKit2
 		AMGetUserCurrentGameInfoResponse = 4270,
 		AMGetGSPlayerList = 4271,
 		AMGetGSPlayerListResponse = 4272,
-		[Obsolete]
-		AMUpdatePersonaStateCache = 4275,
 		AMGetGameMembers = 4276,
 		AMGetGameMembersResponse = 4277,
 		AMGetSteamIDForMicroTxn = 4278,
 		AMGetSteamIDForMicroTxnResponse = 4279,
+		[Obsolete( "renamed to AMSetPartnerMember" )]
 		AMAddPublisherUser = 4280,
+		AMSetPartnerMember = 4280,
 		AMRemovePublisherUser = 4281,
 		AMGetUserLicenseList = 4282,
 		AMGetUserLicenseListResponse = 4283,
@@ -1238,32 +948,22 @@ namespace SteamKit2
 		AMGetAccountDetailsResponse = 4288,
 		AMGetPlayerLinkDetails = 4289,
 		AMGetPlayerLinkDetailsResponse = 4290,
-		[Obsolete]
-		AMSubscribeToPersonaFeed = 4291,
-		[Obsolete]
-		AMGetUserVacBanList = 4292,
-		[Obsolete]
-		AMGetUserVacBanListResponse = 4293,
 		AMGetAccountFlagsForWGSpoofing = 4294,
 		AMGetAccountFlagsForWGSpoofingResponse = 4295,
-		[Obsolete]
-		AMGetFriendsWishlistInfo = 4296,
-		[Obsolete]
-		AMGetFriendsWishlistInfoResponse = 4297,
 		AMGetClanOfficers = 4298,
 		AMGetClanOfficersResponse = 4299,
 		AMNameChange = 4300,
 		AMGetNameHistory = 4301,
 		AMGetNameHistoryResponse = 4302,
 		AMUpdateProviderStatus = 4305,
-		[Obsolete]
-		AMClearPersonaMetadataBlob = 4306,
 		AMSupportRemoveAccountSecurity = 4307,
 		AMIsAccountInCaptchaGracePeriod = 4308,
 		AMIsAccountInCaptchaGracePeriodResponse = 4309,
 		AMAccountPS3Unlink = 4310,
 		AMAccountPS3UnlinkResponse = 4311,
+		[Obsolete( "renamed to UGSStoreUserStatsResponse" )]
 		AMStoreUserStatsResponse = 4312,
+		UGSStoreUserStatsResponse = 4312,
 		AMGetAccountPSNInfo = 4313,
 		AMGetAccountPSNInfoResponse = 4314,
 		AMAuthenticatedPlayerList = 4315,
@@ -1292,8 +992,6 @@ namespace SteamKit2
 		AMGameServerAccountChangePassword = 4340,
 		AMGameServerAccountDeleteAccount = 4341,
 		AMRenewAgreement = 4342,
-		[Obsolete]
-		AMSendEmail = 4343,
 		AMXsollaPayment = 4344,
 		AMXsollaPaymentResponse = 4345,
 		AMAcctAllowedToPurchase = 4346,
@@ -1313,7 +1011,9 @@ namespace SteamKit2
 		AMHandlePendingTransactionResponse = 4360,
 		AMGrantGuestPasses2 = 4361,
 		AMGrantGuestPasses2Response = 4362,
+		[Obsolete]
 		AMSessionQuery = 4363,
+		[Obsolete]
 		AMSessionQueryResponse = 4364,
 		AMGetPlayerBanDetails = 4365,
 		AMGetPlayerBanDetailsResponse = 4366,
@@ -1325,16 +1025,21 @@ namespace SteamKit2
 		AMGetPendingNotificationCount = 4375,
 		AMGetPendingNotificationCountResponse = 4376,
 		AMPasswordHashUpgrade = 4377,
+		[Obsolete]
 		AMMoPayPayment = 4378,
+		[Obsolete]
 		AMMoPayPaymentResponse = 4379,
 		AMBoaCompraPayment = 4380,
 		AMBoaCompraPaymentResponse = 4381,
+		[Obsolete]
 		AMExpireCaptchaByGID = 4382,
 		AMCompleteExternalPurchase = 4383,
 		AMCompleteExternalPurchaseResponse = 4384,
 		AMResolveNegativeWalletCredits = 4385,
 		AMResolveNegativeWalletCreditsResponse = 4386,
+		[Obsolete]
 		AMPayelpPayment = 4387,
+		[Obsolete]
 		AMPayelpPaymentResponse = 4388,
 		AMPlayerGetClanBasicDetails = 4389,
 		AMPlayerGetClanBasicDetailsResponse = 4390,
@@ -1360,6 +1065,16 @@ namespace SteamKit2
 		AMBitPayPayment = 4410,
 		AMBitPayPaymentResponse = 4411,
 		AMSendAccountInfoUpdate = 4412,
+		AMSendScheduledGift = 4413,
+		AMNodwinPayment = 4414,
+		AMNodwinPaymentResponse = 4415,
+		AMResolveWalletRevoke = 4416,
+		AMResolveWalletReverseRevoke = 4417,
+		AMFundedPayment = 4418,
+		AMFundedPaymentResponse = 4419,
+		AMRequestPersonaUpdateForChatServer = 4420,
+		AMPerfectWorldPayment = 4421,
+		AMPerfectWorldPaymentResponse = 4422,
 		BasePSRange = 5000,
 		PSCreateShoppingCart = 5001,
 		PSCreateShoppingCartResponse = 5002,
@@ -1391,12 +1106,6 @@ namespace SteamKit2
 		UFSSynchronizeFileResponse = 5218,
 		ClientUFSDeleteFileRequest = 5219,
 		ClientUFSDeleteFileResponse = 5220,
-		[Obsolete]
-		UFSDownloadRequest = 5221,
-		[Obsolete]
-		UFSDownloadResponse = 5222,
-		[Obsolete]
-		UFSDownloadChunk = 5223,
 		ClientUFSGetUGCDetails = 5226,
 		ClientUFSGetUGCDetailsResponse = 5227,
 		UFSUpdateFileFlags = 5228,
@@ -1422,8 +1131,12 @@ namespace SteamKit2
 		UFSDownloadFinishRequest = 5248,
 		UFSDownloadFinishResponse = 5249,
 		UFSFlushURLCache = 5250,
+		[Obsolete( "renamed to ClientUFSUploadCommit" )]
 		UFSUploadCommit = 5251,
+		ClientUFSUploadCommit = 5251,
+		[Obsolete( "renamed to ClientUFSUploadCommitResponse" )]
 		UFSUploadCommitResponse = 5252,
+		ClientUFSUploadCommitResponse = 5252,
 		UFSMigrateFileAppID = 5253,
 		UFSMigrateFileAppIDResponse = 5254,
 		BaseClient2 = 5400,
@@ -1432,11 +1145,10 @@ namespace SteamKit2
 		ClientCreateAccountResponse = 5403,
 		ClientResetForgottenPassword = 5404,
 		ClientResetForgottenPasswordResponse = 5405,
+		[Obsolete]
 		ClientCreateAccount2 = 5406,
 		ClientInformOfResetForgottenPassword = 5407,
 		ClientInformOfResetForgottenPasswordResponse = 5408,
-		[Obsolete]
-		ClientAnonUserLogOn_Deprecated = 5409,
 		ClientGamesPlayedWithDataBlob = 5410,
 		ClientUpdateUserGameInfo = 5411,
 		ClientFileToDownload = 5412,
@@ -1447,12 +1159,8 @@ namespace SteamKit2
 		ClientLBSFindOrCreateLBResponse = 5417,
 		ClientLBSGetLBEntries = 5418,
 		ClientLBSGetLBEntriesResponse = 5419,
-		[Obsolete]
-		ClientMarketingMessageUpdate = 5420,
 		ClientChatDeclined = 5426,
 		ClientFriendMsgIncoming = 5427,
-		[Obsolete]
-		ClientAuthList_Deprecated = 5428,
 		ClientTicketAuthComplete = 5429,
 		ClientIsLimitedAccount = 5430,
 		ClientRequestAuthList = 5431,
@@ -1460,15 +1168,9 @@ namespace SteamKit2
 		ClientStat = 5433,
 		ClientP2PConnectionInfo = 5434,
 		ClientP2PConnectionFailInfo = 5435,
-		[Obsolete]
-		ClientGetNumberOfCurrentPlayers = 5436,
-		[Obsolete]
-		ClientGetNumberOfCurrentPlayersResponse = 5437,
 		ClientGetDepotDecryptionKey = 5438,
 		ClientGetDepotDecryptionKeyResponse = 5439,
 		GSPerformHardwareSurvey = 5440,
-		ClientGetAppBetaPasswords = 5441,
-		ClientGetAppBetaPasswordsResponse = 5442,
 		ClientEnableTestLicense = 5443,
 		ClientEnableTestLicenseResponse = 5444,
 		ClientDisableTestLicense = 5445,
@@ -1487,12 +1189,8 @@ namespace SteamKit2
 		ClientPersonalQAChange3 = 5459,
 		ClientResetForgottenPassword3 = 5460,
 		ClientRequestForgottenPasswordEmail3 = 5461,
-		[Obsolete]
-		ClientCreateAccount3 = 5462,
 		ClientNewLoginKey = 5463,
 		ClientNewLoginKeyAccepted = 5464,
-		[Obsolete]
-		ClientLogOnWithHash_Deprecated = 5465,
 		ClientStoreUserStats2 = 5466,
 		ClientStatsUpdated = 5467,
 		ClientActivateOEMLicense = 5468,
@@ -1547,8 +1245,6 @@ namespace SteamKit2
 		ClientLBSSetUGCResponse = 5530,
 		ClientAMGetClanOfficers = 5531,
 		ClientAMGetClanOfficersResponse = 5532,
-		ClientCheckFileSignature = 5533,
-		ClientCheckFileSignatureResponse = 5534,
 		ClientFriendProfileInfo = 5535,
 		ClientFriendProfileInfoResponse = 5536,
 		ClientUpdateMachineAuth = 5537,
@@ -1558,7 +1254,9 @@ namespace SteamKit2
 		ClientRequestMachineAuth = 5541,
 		ClientRequestMachineAuthResponse = 5542,
 		ClientScreenshotsChanged = 5543,
+		[Obsolete]
 		ClientEmailChange4 = 5544,
+		[Obsolete]
 		ClientEmailChangeResponse4 = 5545,
 		ClientGetCDNAuthToken = 5546,
 		ClientGetCDNAuthTokenResponse = 5547,
@@ -1578,8 +1276,12 @@ namespace SteamKit2
 		AMClientCreateFriendsGroupResponse = 5561,
 		AMClientDeleteFriendsGroup = 5562,
 		AMClientDeleteFriendsGroupResponse = 5563,
+		[Obsolete( "renamed to AMClientManageFriendsGroup" )]
 		AMClientRenameFriendsGroup = 5564,
+		AMClientManageFriendsGroup = 5564,
+		[Obsolete( "renamed to AMClientManageFriendsGroupResponse" )]
 		AMClientRenameFriendsGroupResponse = 5565,
+		AMClientManageFriendsGroupResponse = 5565,
 		AMClientAddFriendToGroup = 5566,
 		AMClientAddFriendToGroupResponse = 5567,
 		AMClientRemoveFriendFromGroup = 5568,
@@ -1593,10 +1295,6 @@ namespace SteamKit2
 		ClientItemAnnouncements = 5576,
 		ClientRequestItemAnnouncements = 5577,
 		ClientFriendMsgEchoToSender = 5578,
-		[Obsolete]
-		ClientChangeSteamGuardOptions = 5579,
-		[Obsolete]
-		ClientChangeSteamGuardOptionsResponse = 5580,
 		ClientOGSGameServerPingSample = 5581,
 		ClientCommentNotifications = 5582,
 		ClientRequestCommentNotifications = 5583,
@@ -1607,15 +1305,17 @@ namespace SteamKit2
 		AMClientSetPlayerNickname = 5588,
 		AMClientSetPlayerNicknameResponse = 5589,
 		[Obsolete]
-		ClientRequestOAuthTokenForApp = 5590,
-		[Obsolete]
-		ClientRequestOAuthTokenForAppResponse = 5591,
 		ClientCreateAccountProto = 5590,
+		[Obsolete]
 		ClientCreateAccountProtoResponse = 5591,
 		ClientGetNumberOfCurrentPlayersDP = 5592,
 		ClientGetNumberOfCurrentPlayersDPResponse = 5593,
+		[Obsolete( "renamed to ClientServiceMethodLegacy" )]
 		ClientServiceMethod = 5594,
+		ClientServiceMethodLegacy = 5594,
+		[Obsolete( "renamed to ClientServiceMethodLegacyResponse" )]
 		ClientServiceMethodResponse = 5595,
+		ClientServiceMethodLegacyResponse = 5595,
 		ClientFriendUserStatusPublished = 5596,
 		ClientCurrentUIMode = 5597,
 		ClientVanityURLChangedNotification = 5598,
@@ -1641,55 +1341,16 @@ namespace SteamKit2
 		DFSStartTransfer = 5618,
 		DFSTransferComplete = 5619,
 		DFSRouteFileResponse = 5620,
+		ClientNetworkingCertRequest = 5621,
+		ClientNetworkingCertRequestResponse = 5622,
+		ClientChallengeRequest = 5623,
+		ClientChallengeResponse = 5624,
+		BadgeCraftedNotification = 5625,
+		ClientNetworkingMobileCertRequest = 5626,
+		ClientNetworkingMobileCertRequestResponse = 5627,
 		BaseMDS = 5800,
-		[Obsolete]
-		ClientMDSLoginRequest = 5801,
-		[Obsolete]
-		ClientMDSLoginResponse = 5802,
-		[Obsolete]
-		ClientMDSUploadManifestRequest = 5803,
-		[Obsolete]
-		ClientMDSUploadManifestResponse = 5804,
-		[Obsolete]
-		ClientMDSTransmitManifestDataChunk = 5805,
-		[Obsolete]
-		ClientMDSHeartbeat = 5806,
-		[Obsolete]
-		ClientMDSUploadDepotChunks = 5807,
-		[Obsolete]
-		ClientMDSUploadDepotChunksResponse = 5808,
-		[Obsolete]
-		ClientMDSInitDepotBuildRequest = 5809,
-		[Obsolete]
-		ClientMDSInitDepotBuildResponse = 5810,
 		AMToMDSGetDepotDecryptionKey = 5812,
 		MDSToAMGetDepotDecryptionKeyResponse = 5813,
-		[Obsolete]
-		MDSGetVersionsForDepot = 5814,
-		[Obsolete]
-		MDSGetVersionsForDepotResponse = 5815,
-		[Obsolete]
-		MDSSetPublicVersionForDepot = 5816,
-		[Obsolete]
-		MDSSetPublicVersionForDepotResponse = 5817,
-		[Obsolete]
-		ClientMDSInitWorkshopBuildRequest = 5816,
-		[Obsolete]
-		ClientMDSInitWorkshopBuildResponse = 5817,
-		[Obsolete]
-		ClientMDSGetDepotManifest = 5818,
-		[Obsolete]
-		ClientMDSGetDepotManifestResponse = 5819,
-		[Obsolete]
-		ClientMDSGetDepotManifestChunk = 5820,
-		[Obsolete]
-		ClientMDSUploadRateTest = 5823,
-		[Obsolete]
-		ClientMDSUploadRateTestResponse = 5824,
-		[Obsolete]
-		MDSDownloadDepotChunksAck = 5825,
-		[Obsolete]
-		MDSContentServerStatsBroadcast = 5826,
 		MDSContentServerConfigRequest = 5827,
 		MDSContentServerConfig = 5828,
 		MDSGetDepotManifest = 5829,
@@ -1699,28 +1360,13 @@ namespace SteamKit2
 		MDSGetDepotChunkResponse = 5833,
 		MDSGetDepotChunkChunk = 5834,
 		[Obsolete]
-		MDSUpdateContentServerConfig = 5835,
 		MDSGetServerListForUser = 5836,
+		[Obsolete]
 		MDSGetServerListForUserResponse = 5837,
-		[Obsolete]
-		ClientMDSRegisterAppBuild = 5838,
-		[Obsolete]
-		ClientMDSRegisterAppBuildResponse = 5839,
-		[Obsolete]
-		ClientMDSSetAppBuildLive = 5840,
-		[Obsolete]
-		ClientMDSSetAppBuildLiveResponse = 5841,
-		[Obsolete]
-		ClientMDSGetPrevDepotBuild = 5842,
-		[Obsolete]
-		ClientMDSGetPrevDepotBuildResponse = 5843,
 		MDSToCSFlushChunk = 5844,
-		[Obsolete]
-		ClientMDSSignInstallScript = 5845,
-		[Obsolete]
-		ClientMDSSignInstallScriptResponse = 5846,
 		MDSMigrateChunk = 5847,
 		MDSMigrateChunkResponse = 5848,
+		MDSToCSFlushManifest = 5849,
 		CSBase = 6200,
 		CSPing = 6201,
 		CSPingResponse = 6202,
@@ -1733,13 +1379,14 @@ namespace SteamKit2
 		GameServerOutOfDate = 6407,
 		DeviceAuthorizationBase = 6500,
 		ClientAuthorizeLocalDeviceRequest = 6501,
-		ClientAuthorizeLocalDevice = 6502,
+		ClientAuthorizeLocalDeviceResponse = 6502,
 		ClientDeauthorizeDeviceRequest = 6503,
 		ClientDeauthorizeDevice = 6504,
 		ClientUseLocalDeviceAuthorizations = 6505,
 		ClientGetAuthorizedDevices = 6506,
 		ClientGetAuthorizedDevicesResponse = 6507,
 		AMNotifySessionDeviceAuthorized = 6508,
+		ClientAuthorizeLocalDeviceNotification = 6509,
 		MMSBase = 6600,
 		ClientMMSCreateLobby = 6601,
 		ClientMMSCreateLobbyResponse = 6602,
@@ -1765,6 +1412,11 @@ namespace SteamKit2
 		ClientMMSFlushFrenemyListCache = 6622,
 		ClientMMSFlushFrenemyListCacheResponse = 6623,
 		ClientMMSSetLobbyLinked = 6624,
+		ClientMMSSetRatelimitPolicyOnClient = 6625,
+		ClientMMSGetLobbyStatus = 6626,
+		ClientMMSGetLobbyStatusResponse = 6627,
+		MMSGetLobbyList = 6628,
+		MMSGetLobbyListResponse = 6629,
 		NonStdMsgBase = 6800,
 		NonStdMsgMemcached = 6801,
 		NonStdMsgHTTPServer = 6802,
@@ -1775,73 +1427,40 @@ namespace SteamKit2
 		NonStdMsgDFSTransfer = 6807,
 		NonStdMsgTests = 6808,
 		NonStdMsgUMQpipeAAPL = 6809,
-		[Obsolete]
 		NonStdMsgSyslog = 6810,
 		NonStdMsgLogsink = 6811,
 		NonStdMsgSteam2Emulator = 6812,
 		NonStdMsgRTMPServer = 6813,
+		NonStdMsgWebSocket = 6814,
+		NonStdMsgRedis = 6815,
 		UDSBase = 7000,
 		ClientUDSP2PSessionStarted = 7001,
 		ClientUDSP2PSessionEnded = 7002,
 		UDSRenderUserAuth = 7003,
 		UDSRenderUserAuthResponse = 7004,
+		[Obsolete( "renamed to ClientInviteToGame" )]
 		ClientUDSInviteToGame = 7005,
-		[Obsolete( "renamed to UDSHasSession" )]
-		UDSFindSession = 7006,
+		ClientInviteToGame = 7005,
 		UDSHasSession = 7006,
-		[Obsolete( "renamed to UDSHasSessionResponse" )]
-		UDSFindSessionResponse = 7007,
 		UDSHasSessionResponse = 7007,
 		MPASBase = 7100,
 		MPASVacBanReset = 7101,
 		KGSBase = 7200,
-		[Obsolete]
-		KGSAllocateKeyRange = 7201,
-		[Obsolete]
-		KGSAllocateKeyRangeResponse = 7202,
-		[Obsolete]
-		KGSGenerateKeys = 7203,
-		[Obsolete]
-		KGSGenerateKeysResponse = 7204,
-		[Obsolete]
-		KGSRemapKeys = 7205,
-		[Obsolete]
-		KGSRemapKeysResponse = 7206,
-		[Obsolete]
-		KGSGenerateGameStopWCKeys = 7207,
-		[Obsolete]
-		KGSGenerateGameStopWCKeysResponse = 7208,
 		UCMBase = 7300,
 		ClientUCMAddScreenshot = 7301,
 		ClientUCMAddScreenshotResponse = 7302,
-		[Obsolete]
-		UCMValidateObjectExists = 7303,
-		[Obsolete]
-		UCMValidateObjectExistsResponse = 7304,
 		UCMResetCommunityContent = 7307,
 		UCMResetCommunityContentResponse = 7308,
 		ClientUCMDeleteScreenshot = 7309,
 		ClientUCMDeleteScreenshotResponse = 7310,
 		ClientUCMPublishFile = 7311,
 		ClientUCMPublishFileResponse = 7312,
-		[Obsolete]
-		ClientUCMGetPublishedFileDetails = 7313,
-		[Obsolete]
-		ClientUCMGetPublishedFileDetailsResponse = 7314,
 		ClientUCMDeletePublishedFile = 7315,
 		ClientUCMDeletePublishedFileResponse = 7316,
 		ClientUCMEnumerateUserPublishedFiles = 7317,
 		ClientUCMEnumerateUserPublishedFilesResponse = 7318,
-		[Obsolete]
-		ClientUCMSubscribePublishedFile = 7319,
-		[Obsolete]
-		ClientUCMSubscribePublishedFileResponse = 7320,
 		ClientUCMEnumerateUserSubscribedFiles = 7321,
 		ClientUCMEnumerateUserSubscribedFilesResponse = 7322,
-		[Obsolete]
-		ClientUCMUnsubscribePublishedFile = 7323,
-		[Obsolete]
-		ClientUCMUnsubscribePublishedFileResponse = 7324,
 		ClientUCMUpdatePublishedFile = 7325,
 		ClientUCMUpdatePublishedFileResponse = 7326,
 		UCMUpdatePublishedFile = 7327,
@@ -1849,26 +1468,19 @@ namespace SteamKit2
 		UCMDeletePublishedFile = 7329,
 		UCMDeletePublishedFileResponse = 7330,
 		UCMUpdatePublishedFileStat = 7331,
+		[Obsolete]
 		UCMUpdatePublishedFileBan = 7332,
+		[Obsolete]
 		UCMUpdatePublishedFileBanResponse = 7333,
-		[Obsolete]
-		UCMUpdateTaggedScreenshot = 7334,
-		[Obsolete]
-		UCMAddTaggedScreenshot = 7335,
-		[Obsolete]
-		UCMRemoveTaggedScreenshot = 7336,
 		UCMReloadPublishedFile = 7337,
 		UCMReloadUserFileListCaches = 7338,
 		UCMPublishedFileReported = 7339,
+		[Obsolete]
 		UCMUpdatePublishedFileIncompatibleStatus = 7340,
 		UCMPublishedFilePreviewAdd = 7341,
 		UCMPublishedFilePreviewAddResponse = 7342,
 		UCMPublishedFilePreviewRemove = 7343,
 		UCMPublishedFilePreviewRemoveResponse = 7344,
-		[Obsolete]
-		UCMPublishedFilePreviewChangeSortOrder = 7345,
-		[Obsolete]
-		UCMPublishedFilePreviewChangeSortOrderResponse = 7346,
 		ClientUCMPublishedFileSubscribed = 7347,
 		ClientUCMPublishedFileUnsubscribed = 7348,
 		UCMPublishedFileSubscribed = 7349,
@@ -1879,17 +1491,9 @@ namespace SteamKit2
 		UCMPublishedFileChildAddResponse = 7354,
 		UCMPublishedFileChildRemove = 7355,
 		UCMPublishedFileChildRemoveResponse = 7356,
-		[Obsolete]
-		UCMPublishedFileChildChangeSortOrder = 7357,
-		[Obsolete]
-		UCMPublishedFileChildChangeSortOrderResponse = 7358,
 		UCMPublishedFileParentChanged = 7359,
 		ClientUCMGetPublishedFilesForUser = 7360,
 		ClientUCMGetPublishedFilesForUserResponse = 7361,
-		[Obsolete]
-		UCMGetPublishedFilesForUser = 7362,
-		[Obsolete]
-		UCMGetPublishedFilesForUserResponse = 7363,
 		ClientUCMSetUserPublishedFileAction = 7364,
 		ClientUCMSetUserPublishedFileActionResponse = 7365,
 		ClientUCMEnumeratePublishedFilesByUserAction = 7366,
@@ -1898,22 +1502,12 @@ namespace SteamKit2
 		UCMGetUserSubscribedFiles = 7369,
 		UCMGetUserSubscribedFilesResponse = 7370,
 		UCMFixStatsPublishedFile = 7371,
-		[Obsolete]
-		UCMDeleteOldScreenshot = 7372,
-		[Obsolete]
-		UCMDeleteOldScreenshotResponse = 7373,
-		[Obsolete]
-		UCMDeleteOldVideo = 7374,
-		[Obsolete]
-		UCMDeleteOldVideoResponse = 7375,
-		[Obsolete]
-		UCMUpdateOldScreenshotPrivacy = 7376,
-		[Obsolete]
-		UCMUpdateOldScreenshotPrivacyResponse = 7377,
 		ClientUCMEnumerateUserSubscribedFilesWithUpdates = 7378,
 		ClientUCMEnumerateUserSubscribedFilesWithUpdatesResponse = 7379,
 		UCMPublishedFileContentUpdated = 7380,
+		[Obsolete( "renamed to ClientUCMPublishedFileUpdated" )]
 		UCMPublishedFileUpdated = 7381,
+		ClientUCMPublishedFileUpdated = 7381,
 		ClientWorkshopItemChangesRequest = 7382,
 		ClientWorkshopItemChangesResponse = 7383,
 		ClientWorkshopItemInfoRequest = 7384,
@@ -1927,6 +1521,7 @@ namespace SteamKit2
 		FSComputeFrenematrix = 7506,
 		FSComputeFrenematrixResponse = 7507,
 		FSPlayStatusNotification = 7508,
+		[Obsolete]
 		FSPublishPersonaStatus = 7509,
 		FSAddOrRemoveFollower = 7510,
 		FSAddOrRemoveFollowerResponse = 7511,
@@ -1941,14 +1536,26 @@ namespace SteamKit2
 		ClientFSEnumerateFollowingListResponse = 7520,
 		FSGetPendingNotificationCount = 7521,
 		FSGetPendingNotificationCountResponse = 7522,
+		[Obsolete( "Renamed to ClientChatOfflineMessageNotification" )]
 		ClientFSOfflineMessageNotification = 7523,
+		[Obsolete( "Renamed to ClientChatRequestOfflineMessageCount" )]
 		ClientFSRequestOfflineMessageCount = 7524,
+		[Obsolete( "Renamed to ClientChatGetFriendMessageHistory" )]
 		ClientFSGetFriendMessageHistory = 7525,
+		[Obsolete( "Renamed to ClientChatGetFriendMessageHistoryResponse" )]
 		ClientFSGetFriendMessageHistoryResponse = 7526,
+		[Obsolete( "Renamed to ClientChatGetFriendMessageHistoryForOfflineMessages" )]
 		ClientFSGetFriendMessageHistoryForOfflineMessages = 7527,
+		ClientChatOfflineMessageNotification = 7523,
+		ClientChatRequestOfflineMessageCount = 7524,
+		ClientChatGetFriendMessageHistory = 7525,
+		ClientChatGetFriendMessageHistoryResponse = 7526,
+		ClientChatGetFriendMessageHistoryForOfflineMessages = 7527,
 		ClientFSGetFriendsSteamLevels = 7528,
 		ClientFSGetFriendsSteamLevelsResponse = 7529,
+		[Obsolete( "renamed to AMRequestFriendData" )]
 		FSRequestFriendData = 7530,
+		AMRequestFriendData = 7530,
 		DRMRange2 = 7600,
 		CEGVersionSetEnableDisableRequest = 7600,
 		CEGVersionSetEnableDisableResponse = 7601,
@@ -1985,8 +1592,6 @@ namespace SteamKit2
 		ClientUGSGetGlobalStats = 7901,
 		ClientUGSGetGlobalStatsResponse = 7902,
 		StoreBase = 8000,
-		[Obsolete]
-		StoreUpdateRecommendationCount = 8000,
 		UMQBase = 8100,
 		UMQLogonRequest = 8100,
 		UMQLogonResponse = 8101,
@@ -1997,20 +1602,10 @@ namespace SteamKit2
 		UMQPoll = 8106,
 		UMQPollResults = 8107,
 		UMQ2AM_ClientMsgBatch = 8108,
-		[Obsolete]
-		UMQEnqueueMobileSalePromotions = 8109,
-		[Obsolete]
-		UMQEnqueueMobileAnnouncements = 8110,
 		WorkshopBase = 8200,
-		[Obsolete]
-		WorkshopAcceptTOSRequest = 8200,
-		[Obsolete]
-		WorkshopAcceptTOSResponse = 8201,
 		WebAPIBase = 8300,
 		WebAPIValidateOAuth2Token = 8300,
 		WebAPIValidateOAuth2TokenResponse = 8301,
-		[Obsolete]
-		WebAPIInvalidateTokensForAccount = 8302,
 		WebAPIRegisterGCInterfaces = 8303,
 		WebAPIInvalidateOAuthClientCache = 8304,
 		WebAPIInvalidateOAuthTokenCache = 8305,
@@ -2019,16 +1614,8 @@ namespace SteamKit2
 		BackpackAddToCurrency = 8401,
 		BackpackAddToCurrencyResponse = 8402,
 		CREBase = 8500,
-		[Obsolete]
-		CRERankByTrend = 8501,
-		[Obsolete]
-		CRERankByTrendResponse = 8502,
 		CREItemVoteSummary = 8503,
 		CREItemVoteSummaryResponse = 8504,
-		[Obsolete]
-		CRERankByVote = 8505,
-		[Obsolete]
-		CRERankByVoteResponse = 8506,
 		CREUpdateUserPublishedItemVote = 8507,
 		CREUpdateUserPublishedItemVoteResponse = 8508,
 		CREGetUserPublishedItemVoteDetails = 8509,
@@ -2039,12 +1626,6 @@ namespace SteamKit2
 		SecretsBase = 8600,
 		SecretsRequestCredentialPair = 8600,
 		SecretsCredentialPairResponse = 8601,
-		[Obsolete]
-		SecretsRequestServerIdentity = 8602,
-		[Obsolete]
-		SecretsServerIdentityResponse = 8603,
-		[Obsolete]
-		SecretsUpdateServerIdentities = 8604,
 		BoxMonitorBase = 8700,
 		BoxMonitorReportRequest = 8700,
 		BoxMonitorReportResponse = 8701,
@@ -2070,10 +1651,6 @@ namespace SteamKit2
 		DRMWorkerProcessInstallDRMDLLResponse = 9105,
 		DRMWorkerProcessSecretIdStringRequest = 9106,
 		DRMWorkerProcessSecretIdStringResponse = 9107,
-		[Obsolete]
-		DRMWorkerProcessGetDRMGuidsFromFileRequest = 9108,
-		[Obsolete]
-		DRMWorkerProcessGetDRMGuidsFromFileResponse = 9109,
 		DRMWorkerProcessInstallProcessedFilesRequest = 9110,
 		DRMWorkerProcessInstallProcessedFilesResponse = 9111,
 		DRMWorkerProcessExamineBlobRequest = 9112,
@@ -2106,22 +1683,18 @@ namespace SteamKit2
 		QuestServerBase = 9300,
 		ClientGetEmoticonList = 9330,
 		ClientEmoticonList = 9331,
-		[Obsolete( "renamed to SLCBase" )]
-		ClientSharedLibraryBase = 9400,
 		SLCBase = 9400,
 		SLCUserSessionStatus = 9400,
 		SLCRequestUserSessionStatus = 9401,
 		SLCSharedLicensesLockStatus = 9402,
-		[Obsolete]
-		ClientSharedLicensesLockStatus = 9403,
-		[Obsolete]
-		ClientSharedLicensesStopPlaying = 9404,
 		ClientSharedLibraryLockStatus = 9405,
 		ClientSharedLibraryStopPlaying = 9406,
 		SLCOwnerLibraryChanged = 9407,
 		SLCSharedLibraryChanged = 9408,
 		RemoteClientBase = 9500,
+		[Obsolete]
 		RemoteClientAuth = 9500,
+		[Obsolete]
 		RemoteClientAuthResponse = 9501,
 		RemoteClientAppStatus = 9502,
 		RemoteClientStartStream = 9503,
@@ -2132,8 +1705,14 @@ namespace SteamKit2
 		ClientUnlockStreamingResponse = 9508,
 		RemoteClientAcceptEULA = 9509,
 		RemoteClientGetControllerConfig = 9510,
+		[Obsolete( "renamed to RemoteClientGetControllerConfigResponse" )]
 		RemoteClientGetControllerConfigResposne = 9511,
+		RemoteClientGetControllerConfigResponse = 9511,
 		RemoteClientStreamingEnabled = 9512,
+		ClientUnlockHEVC = 9513,
+		ClientUnlockHEVCResponse = 9514,
+		RemoteClientStatusRequest = 9515,
+		RemoteClientStatusResponse = 9516,
 		ClientConcurrentSessionsBase = 9600,
 		ClientPlayingSessionState = 9600,
 		ClientKickPlayingSession = 9601,
@@ -2146,6 +1725,27 @@ namespace SteamKit2
 		BaseClient3 = 9800,
 		ClientVoiceCallPreAuthorize = 9800,
 		ClientVoiceCallPreAuthorizeResponse = 9801,
+		ClientServerTimestampRequest = 9802,
+		ClientServerTimestampResponse = 9803,
+		ClientLANP2PBase = 9900,
+		ClientLANP2PRequestChunk = 9900,
+		ClientLANP2PRequestChunkResponse = 9901,
+		ClientLANP2PMax = 9999,
+		BaseWatchdogServer = 10000,
+		NotifyWatchdog = 10000,
+		ClientSiteLicenseBase = 10100,
+		ClientSiteLicenseSiteInfoNotification = 10100,
+		ClientSiteLicenseCheckout = 10101,
+		ClientSiteLicenseCheckoutResponse = 10102,
+		ClientSiteLicenseGetAvailableSeats = 10103,
+		ClientSiteLicenseGetAvailableSeatsResponse = 10104,
+		ClientSiteLicenseGetContentCacheInfo = 10105,
+		ClientSiteLicenseGetContentCacheInfoResponse = 10106,
+		BaseChatServer = 12000,
+		ChatServerGetPendingNotificationCount = 12000,
+		ChatServerGetPendingNotificationCountResponse = 12001,
+		BaseSecretServer = 12100,
+		ServerSecretChanged = 12100,
 	}
 	public enum EResult
 	{
@@ -2204,8 +1804,6 @@ namespace SteamKit2
 		DataCorruption = 53,
 		DiskFull = 54,
 		RemoteCallFailed = 55,
-		[Obsolete( "renamed to PasswordUnset" )]
-		PasswordNotSet = 56,
 		PasswordUnset = 56,
 		ExternalAccountUnlinked = 57,
 		PSNTicketInvalid = 58,
@@ -2216,8 +1814,6 @@ namespace SteamKit2
 		AccountLogonDenied = 63,
 		CannotUseOldPassword = 64,
 		InvalidLoginAuthCode = 65,
-		[Obsolete( "renamed to AccountLogonDeniedNoMail" )]
-		AccountLogonDeniedNoMailSent = 66,
 		AccountLogonDeniedNoMail = 66,
 		HardwareNotCapableOfIPT = 67,
 		IPTInitError = 68,
@@ -2225,8 +1821,6 @@ namespace SteamKit2
 		FacebookQueryError = 70,
 		ExpiredLoginAuthCode = 71,
 		IPLoginRestrictionFailed = 72,
-		[Obsolete( "renamed to AccountLockedDown" )]
-		AccountLocked = 73,
 		AccountLockedDown = 73,
 		AccountLogonDeniedVerifiedEmailRequired = 74,
 		NoMatchingURL = 75,
@@ -2239,28 +1833,16 @@ namespace SteamKit2
 		RestrictedDevice = 82,
 		RegionLocked = 83,
 		RateLimitExceeded = 84,
-		[Obsolete( "renamed to AccountLoginDeniedNeedTwoFactor" )]
-		AccountLogonDeniedNeedTwoFactorCode = 85,
 		AccountLoginDeniedNeedTwoFactor = 85,
-		[Obsolete( "renamed to ItemDeleted" )]
-		ItemOrEntryHasBeenDeleted = 86,
 		ItemDeleted = 86,
 		AccountLoginDeniedThrottle = 87,
 		TwoFactorCodeMismatch = 88,
 		TwoFactorActivationCodeMismatch = 89,
-		[Obsolete( "renamed to AccountAssociatedToMultiplePartners" )]
-		AccountAssociatedToMultiplePlayers = 90,
 		AccountAssociatedToMultiplePartners = 90,
 		NotModified = 91,
-		[Obsolete( "renamed to NoMobileDevice" )]
-		NoMobileDeviceAvailable = 92,
 		NoMobileDevice = 92,
-		[Obsolete( "renamed to TimeNotSynced" )]
-		TimeIsOutOfSync = 93,
 		TimeNotSynced = 93,
 		SMSCodeFailed = 94,
-		[Obsolete( "renamed to AccountLimitExceeded" )]
-		TooManyAccountsAccessThisResource = 95,
 		AccountLimitExceeded = 95,
 		AccountActivityLimitExceeded = 96,
 		PhoneActivityLimitExceeded = 97,
@@ -2273,6 +1855,19 @@ namespace SteamKit2
 		InvalidItemType = 104,
 		IPBanned = 105,
 		GSLTExpired = 106,
+		InsufficientFunds = 107,
+		TooManyPending = 108,
+		NoSiteLicensesFound = 109,
+		WGNetworkSendExceeded = 110,
+		AccountNotFriends = 111,
+		LimitedUserAccount = 112,
+		CantRemoveItem = 113,
+		AccountHasBeenDeleted = 114,
+		AccountHasAnExistingUserCancelledLicense = 115,
+		DeniedDueToCommunityCooldown = 116,
+		NoLauncherSpecified = 117,
+		MustAgreeToSSA = 118,
+		LauncherMigrated = 119,
 	}
 	public enum EUniverse
 	{
@@ -2281,7 +1876,6 @@ namespace SteamKit2
 		Beta = 2,
 		Internal = 3,
 		Dev = 4,
-		Max = 5,
 	}
 	public enum EChatEntryType
 	{
@@ -2289,10 +1883,6 @@ namespace SteamKit2
 		ChatMsg = 1,
 		Typing = 2,
 		InviteGame = 3,
-		[Obsolete( "No longer supported by clients" )]
-		Emote = 4,
-		[Obsolete( "Listen for LobbyGameCreated_t callback instead" )]
-		LobbyGameStart = 5,
 		LeftConversation = 6,
 		Entered = 7,
 		WasKicked = 8,
@@ -2312,7 +1902,7 @@ namespace SteamKit2
 		Snooze = 4,
 		LookingToTrade = 5,
 		LookingToPlay = 6,
-		Max = 7,
+		Invisible = 7,
 	}
 	public enum EAccountType
 	{
@@ -2327,7 +1917,6 @@ namespace SteamKit2
 		Chat = 8,
 		ConsoleUser = 9,
 		AnonUser = 10,
-		Max = 11,
 	}
 	public enum EFriendRelationship
 	{
@@ -2338,8 +1927,6 @@ namespace SteamKit2
 		RequestInitiator = 4,
 		Ignored = 5,
 		IgnoredFriend = 6,
-		SuggestedFriend = 7,
-		Max = 8,
 	}
 	[Flags]
 	public enum EAccountFlags
@@ -2437,21 +2024,14 @@ namespace SteamKit2
 	{
 		HasRichPresence = 1,
 		InJoinableGame = 2,
-		[Obsolete( "no longer has any effect" )]
 		Golden = 4,
-		[Obsolete( "renamed to ClientTypeWeb" )]
-		OnlineUsingWeb = 256,
+		RemotePlayTogether = 8,
 		ClientTypeWeb = 256,
-		[Obsolete( "renamed to ClientTypeMobile" )]
-		OnlineUsingMobile = 512,
 		ClientTypeMobile = 512,
-		[Obsolete( "renamed to ClientTypeTenfoot" )]
-		OnlineUsingBigPicture = 1024,
 		ClientTypeTenfoot = 1024,
-		[Obsolete( "renamed to ClientTypeVR" )]
-		OnlineUsingVR = 2048,
 		ClientTypeVR = 2048,
 		LaunchTypeGamepad = 4096,
+		LaunchTypeCompatTool = 8192,
 	}
 	[Flags]
 	public enum EClientPersonaStateFlag
@@ -2461,14 +2041,19 @@ namespace SteamKit2
 		QueryPort = 4,
 		SourceID = 8,
 		Presence = 16,
-		[Obsolete]
-		Metadata = 32,
 		LastSeen = 64,
+		[Obsolete( "renamed to UserClanRank" )]
 		ClanInfo = 128,
+		UserClanRank = 128,
 		GameExtraInfo = 256,
 		GameDataBlob = 512,
+		[Obsolete( "renamed to ClanData" )]
 		ClanTag = 1024,
+		ClanData = 1024,
 		Facebook = 2048,
+		RichPresence = 4096,
+		Broadcast = 8192,
+		Watching = 16384,
 	}
 	public enum EAppUsageEvent
 	{
@@ -2549,8 +2134,6 @@ namespace SteamKit2
 		EClubPoints = 35,
 		CreditCardJapan = 36,
 		BankTransferJapan = 37,
-		[Obsolete( "renamed to PayEasy" )]
-		PayEasyJapan = 38,
 		PayEasy = 38,
 		Zong = 39,
 		CultureVoucher = 40,
@@ -2560,8 +2143,6 @@ namespace SteamKit2
 		GameVoucher = 44,
 		Multibanco = 45,
 		Payshop = 46,
-		[Obsolete( "renamed to MaestroBoaCompra" )]
-		Maestro = 47,
 		MaestroBoaCompra = 47,
 		OXXO = 48,
 		ToditoCash = 49,
@@ -2596,12 +2177,11 @@ namespace SteamKit2
 		BitCoin = 79,
 		Wallet = 128,
 		Valve = 129,
-		[Obsolete( "renamed to MasterComp" )]
-		SteamPressMaster = 130,
 		MasterComp = 130,
-		[Obsolete( "renamed to Promotional" )]
-		StorePromotion = 131,
 		Promotional = 131,
+		MasterSubscription = 134,
+		Payco = 135,
+		MobileWalletJapan = 136,
 		OEMTicket = 256,
 		Split = 512,
 		Complimentary = 1024,
@@ -2676,11 +2256,25 @@ namespace SteamKit2
 		PurchaseCannotBeReplayed = 65,
 		DelayedCompletion = 66,
 		BundleTypeCannotBeGifted = 67,
+		BlockedByUSGov = 68,
+		ItemsReservedForCommercialUse = 69,
+		GiftAlreadyOwned = 70,
+		GiftInvalidForRecipientRegion = 71,
+		GiftPricingImbalance = 72,
+		GiftRecipientNotSpecified = 73,
+		ItemsNotAllowedForCommercialUse = 74,
+		BusinessStoreCountryCodeMismatch = 75,
+		UserAssociatedWithManyCafes = 76,
+		UserNotAssociatedWithCafe = 77,
+		AddressInvalid = 78,
+		CreditCardNumberInvalid = 79,
+		CannotShipToMilitaryPostOffice = 80,
+		BillingNameInvalidResemblesCreditCard = 81,
+		PaymentMethodTemporarilyUnavailable = 82,
+		PaymentMethodNotSupportedForProduct = 83,
 	}
 	public enum EIntroducerRouting
 	{
-		[Obsolete]
-		FileShare = 0,
 		P2PVoiceChat = 1,
 		P2PNetworking = 2,
 	}
@@ -2729,6 +2323,8 @@ namespace SteamKit2
 		Member = 3,
 		Kicked = 4,
 		KickAcknowledged = 5,
+		PendingApproval = 6,
+		RequestDenied = 7,
 	}
 	public enum EAuthSessionResponse
 	{
@@ -2756,12 +2352,6 @@ namespace SteamKit2
 		CommunityBan = 9,
 		MemberBlockedYou = 10,
 		YouBlockedMember = 11,
-		[Obsolete]
-		NoRankingDataLobby = 12,
-		[Obsolete]
-		NoRankingDataUser = 13,
-		[Obsolete]
-		RankOutOfRange = 14,
 	}
 	public enum EChatRoomType
 	{
@@ -2818,25 +2408,16 @@ namespace SteamKit2
 		Stats = 5,
 		Install = 6,
 		Depots = 7,
-		[Obsolete]
-		VAC = 8,
-		[Obsolete]
-		VAC_UNUSED = 8,
-		[Obsolete]
-		DRM = 9,
-		[Obsolete]
-		DRM_UNUSED = 9,
 		UFS = 10,
 		OGG = 11,
-		[Obsolete]
-		Items = 12,
-		[Obsolete]
-		ItemsUNUSED = 12,
 		Policies = 13,
 		SysReqs = 14,
 		Community = 15,
 		Store = 16,
-		Max = 17,
+		Localization = 17,
+		Broadcastgamedata = 18,
+		Computed = 19,
+		Albummetadata = 20,
 	}
 	public enum EContentDownloadSourceType
 	{
@@ -2846,26 +2427,60 @@ namespace SteamKit2
 		LCS = 3,
 		ProxyCache = 4,
 		LANPeer = 5,
-		Max = 5,
+		SLS = 6,
+		SteamCache = 7,
+		OpenCache = 8,
+		LANCache = 9,
 	}
 	public enum EPlatformType
 	{
 		Unknown = 0,
 		Win32 = 1,
 		Win64 = 2,
-		[Obsolete( "split to Linux64 and Linux32" )]
-		Linux = 3,
 		Linux64 = 3,
 		OSX = 4,
 		PS3 = 5,
 		Linux32 = 6,
-		Max = 6,
 	}
 	public enum EOSType
 	{
 		Unknown = -1,
+		Web = -700,
 		IOSUnknown = -600,
+		IOS1 = -599,
+		IOS2 = -598,
+		IOS3 = -597,
+		IOS4 = -596,
+		IOS5 = -595,
+		IOS6 = -594,
+		IOS6_1 = -593,
+		IOS7 = -592,
+		IOS7_1 = -591,
+		IOS8 = -590,
+		IOS8_1 = -589,
+		IOS8_2 = -588,
+		IOS8_3 = -587,
+		IOS8_4 = -586,
+		IOS9 = -585,
+		IOS9_1 = -584,
+		IOS9_2 = -583,
+		IOS9_3 = -582,
+		IOS10 = -581,
+		IOS10_1 = -580,
+		IOS10_2 = -579,
+		IOS10_3 = -578,
+		IOS11 = -577,
+		IOS11_1 = -576,
+		IOS11_2 = -575,
+		IOS11_3 = -574,
+		IOS11_4 = -573,
+		IOS12 = -572,
+		IOS12_1 = -571,
 		AndroidUnknown = -500,
+		Android6 = -499,
+		Android7 = -498,
+		Android8 = -497,
+		Android9 = -496,
 		UMQ = -400,
 		PS3 = -300,
 		MacOSUnknown = -102,
@@ -2882,6 +2497,11 @@ namespace SteamKit2
 		MacOS1010 = -87,
 		MacOS1011 = -86,
 		MacOS1012 = -85,
+		Macos1013 = -84,
+		Macos1014 = -83,
+		Macos1015 = -82,
+		MacOS1016 = -81,
+		MacOS11 = -80,
 		MacOSMax = -1,
 		LinuxUnknown = -203,
 		Linux22 = -202,
@@ -2891,85 +2511,73 @@ namespace SteamKit2
 		Linux35 = -198,
 		Linux36 = -197,
 		Linux310 = -196,
-		LinuxMax = -103,
+		Linux316 = -195,
+		Linux318 = -194,
+		Linux3x = -193,
+		Linux4x = -192,
+		Linux41 = -191,
+		Linux44 = -190,
+		Linux49 = -189,
+		Linux414 = -188,
+		Linux419 = -187,
+		Linux5x = -186,
+		Linux54 = -185,
+		Linux6x = -184,
+		Linux7x = -183,
+		LinuxMax = -101,
 		WinUnknown = 0,
 		Win311 = 1,
 		Win95 = 2,
 		Win98 = 3,
 		WinME = 4,
 		WinNT = 5,
-		[Obsolete( "renamed to Win2000" )]
-		Win200 = 6,
 		Win2000 = 6,
 		WinXP = 7,
 		Win2003 = 8,
 		WinVista = 9,
-		[Obsolete( "renamed to Windows7" )]
-		Win7 = 10,
 		Windows7 = 10,
 		Win2008 = 11,
 		Win2012 = 12,
-		[Obsolete( "renamed to Windows8" )]
-		Win8 = 13,
 		Windows8 = 13,
-		[Obsolete( "renamed to Windows81" )]
-		Win81 = 14,
 		Windows81 = 14,
 		Win2012R2 = 15,
-		[Obsolete( "renamed to Windows10" )]
-		Win10 = 16,
 		Windows10 = 16,
-		WinMAX = 15,
-		Max = 26,
+		Win2016 = 17,
+		Win2019 = 18,
+		WinMAX = 19,
 	}
 	public enum EServerType
 	{
+		Util = -2,
+		Client = -3,
+		CServer = -4,
+		CEconBase = -5,
 		Invalid = -1,
 		First = 0,
 		Shell = 0,
 		GM = 1,
-		[Obsolete]
-		BUM = 2,
-		[Obsolete]
-		BUMOBOSOLETE = 2,
 		AM = 3,
 		BS = 4,
 		VS = 5,
 		ATS = 6,
 		CM = 7,
 		FBS = 8,
-		[Obsolete( "renamed to BoxMonitor" )]
-		FG = 9,
 		BoxMonitor = 9,
 		SS = 10,
 		DRMS = 11,
-		[Obsolete]
-		HubOBSOLETE = 12,
 		Console = 13,
-		[Obsolete]
-		ASBOBSOLETE = 14,
 		PICS = 14,
-		Client = 15,
-		[Obsolete]
-		BootstrapOBSOLETE = 16,
+		ContentStats = 16,
 		DP = 17,
 		WG = 18,
 		SM = 19,
 		SLC = 20,
 		UFS = 21,
-		Util = 23,
-		[Obsolete( "renamed to Community" )]
-		DSS = 24,
 		Community = 24,
-		[Obsolete]
-		P2PRelayOBSOLETE = 25,
 		AppInformation = 26,
 		Spare = 27,
 		FTS = 28,
-		[Obsolete]
-		EPM = 29,
-		[Obsolete]
-		EPMOBSOLETE = 29,
+		SiteLicense = 29,
 		PS = 30,
 		IS = 31,
 		CCS = 32,
@@ -2991,8 +2599,6 @@ namespace SteamKit2
 		Econ = 48,
 		Backpack = 49,
 		UGS = 50,
-		[Obsolete( "renamed to StoreFeature" )]
-		Store = 51,
 		StoreFeature = 51,
 		MoneyStats = 52,
 		CRE = 53,
@@ -3039,7 +2645,36 @@ namespace SteamKit2
 		Auth = 94,
 		StoreCatalog = 95,
 		HLTVRelay = 96,
-		Max = 97,
+		IDLS = 97,
+		Perf = 98,
+		ItemInventory = 99,
+		Watchdog = 100,
+		AccountHistory = 101,
+		Chat = 102,
+		Shader = 103,
+		AccountHardware = 104,
+		WebRTC = 105,
+		Giveaway = 106,
+		ChatRoom = 107,
+		VoiceChat = 108,
+		QMS = 109,
+		Trust = 110,
+		TimeMachine = 111,
+		VACDBMaster = 112,
+		ContentServerConfig = 113,
+		Minigame = 114,
+		MLTrain = 115,
+		VACTest = 116,
+		TaxService = 117,
+		MLInference = 118,
+		UGSAggregate = 119,
+		TURN = 120,
+		RemoteClient = 121,
+		BroadcastOrigin = 122,
+		BroadcastChannel = 123,
+		SteamAR = 124,
+		China = 125,
+		CrashDump = 126,
 	}
 	public enum EBillingType
 	{
@@ -3057,7 +2692,9 @@ namespace SteamKit2
 		Repurchaseable = 11,
 		FreeOnDemand = 12,
 		Rental = 13,
-		NumBillingTypes = 14,
+		CommercialLicense = 14,
+		FreeCommercialLicense = 15,
+		NumBillingTypes = 16,
 	}
 	public enum EActivationCodeClass : uint
 	{
@@ -3128,8 +2765,14 @@ namespace SteamKit2
 		TWD = 30,
 		SAR = 31,
 		AED = 32,
-		SEK = 33,
-		Max = 34,
+		ARS = 34,
+		ILS = 35,
+		BYN = 36,
+		KZT = 37,
+		KWD = 38,
+		QAR = 39,
+		CRC = 40,
+		UYU = 41,
 	}
 	[Flags]
 	public enum EDepotFileFlag
@@ -3180,7 +2823,6 @@ namespace SteamKit2
 		SteamworksAccessInvite = 13,
 		SteamVideo = 14,
 		GameManagedItem = 15,
-		Max = 16,
 	}
 	public enum EWorkshopFileAction
 	{
@@ -3220,6 +2862,8 @@ namespace SteamKit2
 		NeedsMobileConfirmation = 29,
 		TradingHoldForClearedTradeOffersInitiator = 30,
 		WouldExceedMaxAssetCount = 31,
+		DisabledInRegion = 32,
+		DisabledInPartnerRegion = 33,
 		OKToDeliver = 50,
 	}
 	[Flags]
@@ -3252,7 +2896,6 @@ namespace SteamKit2
 		GiftRevoked = 7,
 		SupportMessage = 8,
 		SupportMessageClearAlert = 9,
-		Max = 10,
 	}
 	[Flags]
 	public enum EChatFlags
@@ -3270,9 +2913,9 @@ namespace SteamKit2
 		OSX = 2,
 		PS3 = 4,
 		Linux = 8,
-		[Obsolete]
-		Reserved1 = 8,
-		Reserved2 = 16,
+		Switch = 16,
+		Android = 32,
+		IPhoneOS = 64,
 		All = -1,
 	}
 	[Flags]
@@ -3321,7 +2964,6 @@ namespace SteamKit2
 		P2PGameConnections = 2,
 		P2PVoiceConnections = 3,
 		BytesDownloaded = 4,
-		Max = 5,
 	}
 	public enum EClientStatAggregateMethod
 	{
@@ -3364,6 +3006,279 @@ namespace SteamKit2
 		FriendsOnly = 4,
 		Public = 8,
 		All = Public | FriendsOnly | Private,
+	}
+	public enum EPublishedFileQueryType
+	{
+		RankedByVote = 0,
+		RankedByPublicationDate = 1,
+		AcceptedForGameRankedByAcceptanceDate = 2,
+		RankedByTrend = 3,
+		FavoritedByFriendsRankedByPublicationDate = 4,
+		CreatedByFriendsRankedByPublicationDate = 5,
+		RankedByNumTimesReported = 6,
+		CreatedByFollowedUsersRankedByPublicationDate = 7,
+		NotYetRated = 8,
+		RankedByTotalUniqueSubscriptions = 9,
+		RankedByTotalVotesAsc = 10,
+		RankedByVotesUp = 11,
+		RankedByTextSearch = 12,
+		RankedByPlaytimeTrend = 13,
+		RankedByTotalPlaytime = 14,
+		RankedByAveragePlaytimeTrend = 15,
+		RankedByLifetimeAveragePlaytime = 16,
+		RankedByPlaytimeSessionsTrend = 17,
+		RankedByLifetimePlaytimeSessions = 18,
+		RankedByInappropriateContentRating = 19,
+	}
+	public enum EPublishedFileInappropriateProvider
+	{
+		Invalid = 0,
+		Google = 1,
+		Amazon = 2,
+	}
+	public enum EPublishedFileInappropriateResult
+	{
+		NotScanned = 0,
+		VeryUnlikely = 1,
+		Unlikely = 30,
+		Possible = 50,
+		Likely = 75,
+		VeryLikely = 100,
+	}
+	public enum EDisplayStatus
+	{
+		Invalid = 0,
+		Launching = 1,
+		Uninstalling = 2,
+		Installing = 3,
+		Running = 4,
+		Validating = 5,
+		Updating = 6,
+		Downloading = 7,
+		Synchronizing = 8,
+		ReadyToInstall = 9,
+		ReadyToPreload = 10,
+		ReadyToLaunch = 11,
+		RegionRestricted = 12,
+		PresaleOnly = 13,
+		InvalidPlatform = 14,
+		ParentalBlocked = 15,
+		PreloadOnly = 16,
+		BorrowerLocked = 17,
+		UpdatePaused = 18,
+		UpdateQueued = 19,
+		UpdateRequired = 20,
+		UpdateDisabled = 21,
+		DownloadPaused = 22,
+		DownloadQueued = 23,
+		DownloadRequired = 24,
+		DownloadDisabled = 25,
+		LicensePending = 26,
+		LicenseExpired = 27,
+		AvailForFree = 28,
+		AvailToBorrow = 29,
+		AvailGuestPass = 30,
+		Purchase = 31,
+	}
+	[Flags]
+	public enum EAppType
+	{
+		Invalid = 0,
+		Game = 1,
+		Application = 2,
+		Tool = 4,
+		Demo = 8,
+		Deprected = 16,
+		DLC = 32,
+		Guide = 64,
+		Driver = 128,
+		Config = 256,
+		Hardware = 512,
+		Franchise = 1024,
+		Video = 2048,
+		Plugin = 4096,
+		Music = 8192,
+		Series = 16384,
+		Comic = 32768,
+		Beta = 65536,
+		Shortcut = 1073741824,
+		[Obsolete]
+		DepotOnly = -2147483648,
+	}
+	public enum EChatRoomGroupType
+	{
+		Default = 0,
+		Unmoderated = 1,
+	}
+	public enum EChatroomNotificationLevel
+	{
+		Invalid = 0,
+		None = 1,
+		MentionMe = 2,
+		MentionAll = 3,
+		AllMessages = 4,
+	}
+	public enum EChatRoomMemberStateChange
+	{
+		Invalid = 0,
+		Joined = 1,
+		Parted = 2,
+		Kicked = 3,
+		Invited = 4,
+		RankChanged = 7,
+		InviteDismissed = 8,
+		Muted = 9,
+		Banned = 10,
+		RolesChanged = 12,
+	}
+	public enum EChatRoomServerMsg
+	{
+		Invalid = 0,
+		RenameChatRoom = 1,
+		Joined = 2,
+		Parted = 3,
+		Kicked = 4,
+		Invited = 5,
+		InviteDismissed = 8,
+		ChatRoomTaglineChanged = 9,
+		ChatRoomAvatarChanged = 10,
+		AppCustom = 11,
+	}
+	public enum EChatRoomGroupRank
+	{
+		Default = 0,
+		Viewer = 10,
+		Guest = 15,
+		Member = 20,
+		Moderator = 30,
+		Officer = 40,
+		Owner = 50,
+	}
+	[Flags]
+	public enum EChatRoomGroupPermissions
+	{
+		Default = 0,
+		Valid = 1,
+		CanInvite = 2,
+		CanKick = 4,
+		CanBan = 8,
+		CanAdminChannel = 16,
+	}
+	public enum EChatRoomGroupAction
+	{
+		Default = 0,
+		CreateRenameDeleteChannel = 1,
+		Kick = 2,
+		Ban = 3,
+		Invite = 4,
+		ChangeTaglineAvatarName = 5,
+		Chat = 6,
+		ViewHistory = 7,
+		ChangeGroupRoles = 8,
+		ChangeUserRoles = 9,
+		MentionAll = 10,
+		SetWatchingBroadcast = 11,
+	}
+	public enum EChatRoomJoinState
+	{
+		Default = 0,
+		None = 1,
+		Joined = 2,
+	}
+	public enum EVoiceCallState
+	{
+		None = 0,
+		ScheduledInitiate = 1,
+		RequestedMicAccess = 2,
+		LocalMicOnly = 3,
+		CreatePeerConnection = 4,
+		InitatedWebRTCSession = 5,
+		WebRTCConnectedWaitingOnIceConnected = 6,
+		RequestedPermission = 7,
+		NotifyingVoiceChatOfWebRTCSession = 8,
+		Connected = 9,
+	}
+	public enum ETradeOfferState
+	{
+		Invalid = 1,
+		Active = 2,
+		Accepted = 3,
+		Countered = 4,
+		Expired = 5,
+		Canceled = 6,
+		Declined = 7,
+		InvalidItems = 8,
+		CreatedNeedsConfirmation = 9,
+		CanceledBySecondFactor = 10,
+		InEscrow = 11,
+	}
+	public enum ETradeOfferConfirmationMethod
+	{
+		Invalid = 0,
+		Email = 1,
+		MobileApp = 2,
+	}
+	public enum ELobbyType
+	{
+		Private = 0,
+		FriendsOnly = 1,
+		Public = 2,
+		Invisible = 3,
+		PrivateUnique = 4,
+	}
+	public enum ELobbyFilterType
+	{
+		String = 0,
+		Numerical = 1,
+		SlotsAvailable = 2,
+		NearValue = 3,
+		Distance = 4,
+	}
+	public enum ELobbyComparison
+	{
+		EqualToOrLessThan = -2,
+		LessThan = -1,
+		Equal = 0,
+		GreaterThan = 1,
+		EqualToOrGreaterThan = 2,
+		NotEqual = 3,
+	}
+	public enum ELobbyDistanceFilter
+	{
+		Close = 0,
+		Default = 1,
+		Far = 2,
+		Worldwide = 3,
+	}
+	public enum ESteamIPv6ConnectivityProtocol
+	{
+		Invalid = 0,
+		Http = 1,
+		Udp = 2,
+	}
+	public enum ESteamIPv6ConnectivityState
+	{
+		Unknown = 0,
+		Good = 1,
+		Bad = 2,
+	}
+	public enum ESteamRealm
+	{
+		Unknown = 0,
+		SteamGlobal = 1,
+		SteamChina = 2,
+	}
+	public enum ELauncherType
+	{
+		Default = 0,
+		PerfectWorld = 1,
+		Nexon = 2,
+		CmdLine = 3,
+		CSGO = 4,
+		ClientUI = 5,
+		Headless = 6,
+		SteamChina = 7,
+		SingleApp = 8,
 	}
 	public enum EUdpPacketType : byte
 	{

@@ -28,6 +28,7 @@ namespace SteamKit2
         {
             asyncJobs.TryAdd( asyncJob, asyncJob );
         }
+
         /// <summary>
         /// Passes a callback to a pending async job.
         /// If the given callback completes the job, the job is removed from this manager.
@@ -36,7 +37,7 @@ namespace SteamKit2
         /// <param name="callback">The callback.</param>
         public void TryCompleteJob( JobID jobId, CallbackMsg callback )
         {
-            AsyncJob asyncJob = GetJob( jobId );
+            var asyncJob = GetJob( jobId );
 
             if ( asyncJob == null )
             {
@@ -60,7 +61,7 @@ namespace SteamKit2
         /// <param name="jobId">The job identifier.</param>
         public void HeartbeatJob( JobID jobId )
         {
-            AsyncJob asyncJob = GetJob( jobId );
+            var asyncJob = GetJob( jobId );
 
             if ( asyncJob == null )
             {
@@ -76,7 +77,7 @@ namespace SteamKit2
         /// <param name="jobId">The job identifier.</param>
         public void FailJob( JobID jobId )
         {
-            AsyncJob asyncJob = GetJob( jobId, andRemove: true );
+            var asyncJob = GetJob( jobId, andRemove: true );
 
             if ( asyncJob == null )
             {
@@ -145,7 +146,7 @@ namespace SteamKit2
         /// <param name="jobId">The JobID.</param>
         /// <param name="andRemove">If set to <c>true</c>, this job is removed from tracking.</param>
         /// <returns></returns>
-        AsyncJob GetJob( JobID jobId, bool andRemove = false )
+        AsyncJob? GetJob( JobID jobId, bool andRemove = false )
         {
             AsyncJob asyncJob;
             bool foundJob = false;

@@ -15,12 +15,11 @@ namespace SteamKit2
         {
             public SteamID SteamID { get; set; }
 
-            public string Name { get; set; }
-            public byte[] AvatarHash { get; set; }
+            public string? Name { get; set; }
+            public byte[]? AvatarHash { get; set; }
 
             public Account()
             {
-                Name = "[unknown]";
                 SteamID = new SteamID();
             }
         }
@@ -34,7 +33,7 @@ namespace SteamKit2
 
             public uint GameAppID { get; set; }
             public GameID GameID { get; set; }
-            public string GameName { get; set; }
+            public string? GameName { get; set; }
 
 
             public User()
@@ -68,7 +67,6 @@ namespace SteamKit2
             public AccountCache()
             {
                 LocalUser = new User();
-                LocalUser.Name = "[unassigned]";
 
                 Users = new AccountList<User>();
                 Clans = new AccountList<Clan>();

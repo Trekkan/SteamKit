@@ -1,4 +1,5 @@
 // OutBuffer.cs
+#nullable disable
 
 namespace SevenZip.Buffer
 {
@@ -18,7 +19,7 @@ namespace SevenZip.Buffer
 
 		public void SetStream(System.IO.Stream stream) { m_Stream = stream; }
 		public void FlushStream() { m_Stream.Flush(); }
-		public void CloseStream() { m_Stream.Close(); }
+		public void CloseStream() { m_Stream.Dispose(); }
 		public void ReleaseStream() { m_Stream = null; }
 
 		public void Init()

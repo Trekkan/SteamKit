@@ -40,7 +40,7 @@ namespace SteamKit2
                 { EMsg.ClientFriendsList, HandleFriendsList },
                 { EMsg.ClientFriendMsgIncoming, HandleFriendMsg },
                 { EMsg.ClientFriendMsgEchoToSender, HandleFriendEchoMsg },
-                { EMsg.ClientFSGetFriendMessageHistoryResponse, HandleFriendMessageHistoryResponse },
+                { EMsg.ClientChatGetFriendMessageHistoryResponse, HandleFriendMessageHistoryResponse },
                 { EMsg.ClientAccountInfo, HandleAccountInfo },
                 { EMsg.ClientAddFriendResponse, HandleFriendResponse },
                 { EMsg.ClientChatEnter, HandleChatEnter },
@@ -57,34 +57,29 @@ namespace SteamKit2
 
 
         /// <summary>
-        /// Gets the local user's persona name.
+        /// Gets the local user's persona name. Will be null before user initialization.
+        /// User initialization is performed prior to <see cref="SteamUser.AccountInfoCallback"/> callback.
         /// </summary>
         /// <returns>The name.</returns>
-        public string GetPersonaName()
+        public string? GetPersonaName()
         {
             return cache.LocalUser.Name;
         }
         /// <summary>
         /// Sets the local user's persona name and broadcasts it over the network.
-        /// Results are returned in a <see cref="PersonaChangeCallback"/> callback.
-        /// The returned <see cref="AsyncJob{T}"/> can also be awaited to retrieve the callback result.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <returns>The Job ID of the request. This can be used to find the appropriate <see cref="PersonaChangeCallback"/>.</returns>
-        public AsyncJob<PersonaChangeCallback> SetPersonaName( string name )
+        public void SetPersonaName( string name )
         {
             // cache the local name right away, so that early calls to SetPersonaState don't reset the set name
-            cache.LocalUser.Name = name;
+            cache.LocalUser.Name = name ?? throw new ArgumentNullException( nameof(name) );
 
             var stateMsg = new ClientMsgProtobuf<CMsgClientChangeStatus>( EMsg.ClientChangeStatus );
-            stateMsg.SourceJobID = Client.GetNextJobID();
 
             stateMsg.Body.persona_state = ( uint )cache.LocalUser.PersonaState;
             stateMsg.Body.player_name = name;
 
             this.Client.Send( stateMsg );
-
-            return new AsyncJob<PersonaChangeCallback>( this.Client, stateMsg.SourceJobID );
         }
 
         /// <summary>
@@ -97,24 +92,17 @@ namespace SteamKit2
         }
         /// <summary>
         /// Sets the local user's persona state and broadcasts it over the network.
-        /// Results are returned in a <see cref="PersonaChangeCallback"/> callback.
-        /// The returned <see cref="AsyncJob{T}"/> can also be awaited to retrieve the callback result.
         /// </summary>
         /// <param name="state">The state.</param>
-        /// <returns>The Job ID of the request. This can be used to find the appropriate <see cref="PersonaChangeCallback"/>.</returns>
-        public AsyncJob<PersonaChangeCallback> SetPersonaState( EPersonaState state )
+        public void SetPersonaState( EPersonaState state )
         {
             cache.LocalUser.PersonaState = state;
 
             var stateMsg = new ClientMsgProtobuf<CMsgClientChangeStatus>( EMsg.ClientChangeStatus );
-            stateMsg.SourceJobID = Client.GetNextJobID();
 
             stateMsg.Body.persona_state = ( uint )state;
-            stateMsg.Body.player_name = cache.LocalUser.Name;
 
             this.Client.Send( stateMsg );
-
-            return new AsyncJob<PersonaChangeCallback>( this.Client, stateMsg.SourceJobID );
         }
 
         /// <summary>
@@ -149,8 +137,13 @@ namespace SteamKit2
         /// </summary>
         /// <param name="steamId">The steam id.</param>
         /// <returns>The name.</returns>
-        public string GetFriendPersonaName( SteamID steamId )
+        public string? GetFriendPersonaName( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             return cache.GetUser( steamId ).Name;
         }
         /// <summary>
@@ -160,6 +153,11 @@ namespace SteamKit2
         /// <returns>The persona state.</returns>
         public EPersonaState GetFriendPersonaState( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             return cache.GetUser( steamId ).PersonaState;
         }
         /// <summary>
@@ -169,6 +167,11 @@ namespace SteamKit2
         /// <returns>The relationship of the friend to the local user.</returns>
         public EFriendRelationship GetFriendRelationship( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             return cache.GetUser( steamId ).Relationship;
         }
         /// <summary>
@@ -176,8 +179,13 @@ namespace SteamKit2
         /// </summary>
         /// <param name="steamId">The steam id.</param>
         /// <returns>The game name of a friend playing a game, or null if they haven't been cached yet.</returns>
-        public string GetFriendGamePlayedName( SteamID steamId )
+        public string? GetFriendGamePlayedName( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             return cache.GetUser( steamId ).GameName;
         }
         /// <summary>
@@ -187,6 +195,11 @@ namespace SteamKit2
         /// <returns>The gameid of a friend playing a game, or 0 if they haven't been cached yet.</returns>
         public GameID GetFriendGamePlayed( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             return cache.GetUser( steamId ).GameID;
         }
         /// <summary>
@@ -194,8 +207,13 @@ namespace SteamKit2
         /// </summary>
         /// <param name="steamId">The SteamID of the friend to get the avatar of.</param>
         /// <returns>A byte array representing a SHA-1 hash of the friend's avatar.</returns>
-        public byte[] GetFriendAvatar( SteamID steamId )
+        public byte[]? GetFriendAvatar( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             return cache.GetUser( steamId ).AvatarHash;
         }
 
@@ -231,8 +249,13 @@ namespace SteamKit2
         /// </summary>
         /// <param name="steamId">The clan SteamID.</param>
         /// <returns>The name.</returns>
-        public string GetClanName( SteamID steamId )
+        public string? GetClanName( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             return cache.Clans.GetAccount( steamId ).Name;
         }
         /// <summary>
@@ -242,6 +265,11 @@ namespace SteamKit2
         /// <returns>The relationship of the clan to the local user.</returns>
         public EClanRelationship GetClanRelationship( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             return cache.Clans.GetAccount( steamId ).Relationship;
         }
         /// <summary>
@@ -249,8 +277,13 @@ namespace SteamKit2
         /// </summary>
         /// <param name="steamId">The SteamID of the clan to get the avatar of.</param>
         /// <returns>A byte array representing a SHA-1 hash of the clan's avatar, or null if the clan could not be found.</returns>
-        public byte[] GetClanAvatar( SteamID steamId )
+        public byte[]? GetClanAvatar( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             return cache.Clans.GetAccount( steamId ).AvatarHash;
         }
 
@@ -262,6 +295,16 @@ namespace SteamKit2
         /// <param name="message">The message to send.</param>
         public void SendChatMessage( SteamID target, EChatEntryType type, string message )
         {
+            if ( target == null )
+            {
+                throw new ArgumentNullException( nameof(target) );
+            }
+
+            if ( message == null )
+            {
+                throw new ArgumentNullException( nameof(message) );
+            }
+
             var chatMsg = new ClientMsgProtobuf<CMsgClientFriendMsg>( EMsg.ClientFriendMsg );
 
             chatMsg.Body.steamid = target;
@@ -277,6 +320,11 @@ namespace SteamKit2
         /// <param name="accountNameOrEmail">The account name or email of the user.</param>
         public void AddFriend( string accountNameOrEmail )
         {
+            if ( accountNameOrEmail == null )
+            {
+                throw new ArgumentNullException( nameof(accountNameOrEmail) );
+            }
+
             var addFriend = new ClientMsgProtobuf<CMsgClientAddFriend>( EMsg.ClientAddFriend );
 
             addFriend.Body.accountname_or_email_to_add = accountNameOrEmail;
@@ -289,6 +337,11 @@ namespace SteamKit2
         /// <param name="steamId">The SteamID of the friend to add.</param>
         public void AddFriend( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             var addFriend = new ClientMsgProtobuf<CMsgClientAddFriend>( EMsg.ClientAddFriend );
 
             addFriend.Body.steamid_to_add = steamId;
@@ -301,6 +354,11 @@ namespace SteamKit2
         /// <param name="steamId">The SteamID of the friend to remove.</param>
         public void RemoveFriend( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             var removeFriend = new ClientMsgProtobuf<CMsgClientRemoveFriend>( EMsg.ClientRemoveFriend );
 
             removeFriend.Body.friendid = steamId;
@@ -315,28 +373,36 @@ namespace SteamKit2
         /// <param name="steamId">The SteamID of the chat room.</param>
         public void JoinChat( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             SteamID chatId = steamId.ConvertToUInt64(); // copy the steamid so we don't modify it
 
             var joinChat = new ClientMsg<MsgClientJoinChat>();
 
             if ( chatId.IsClanAccount )
             {
-                // this steamid is incorrect, so we'll fix it up
-                chatId.AccountInstance = ( uint )SteamID.ChatInstanceFlags.Clan;
-                chatId.AccountType = EAccountType.Chat;
+                chatId = chatId.ToChatID();
             }
 
             joinChat.Body.SteamIdChat = chatId;
 
             Client.Send( joinChat );
-
         }
+
         /// <summary>
         /// Attempts to leave a chat room.
         /// </summary>
         /// <param name="steamId">The SteamID of the chat room.</param>
         public void LeaveChat( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             SteamID chatId = steamId.ConvertToUInt64(); // copy the steamid so we don't modify it
 
             var leaveChat = new ClientMsg<MsgClientChatMemberInfo>();
@@ -351,9 +417,11 @@ namespace SteamKit2
             leaveChat.Body.SteamIdChat = chatId;
             leaveChat.Body.Type = EChatInfoType.StateChange;
 
-            leaveChat.Write( Client.SteamID.ConvertToUInt64() ); // ChatterActedOn
+            var localSteamID = Client.SteamID?.ConvertToUInt64() ?? default; // SteamID can be null if not connected - will be ultimately ignored in Client.Send.
+
+            leaveChat.Write( localSteamID ); // ChatterActedOn
             leaveChat.Write( ( uint )EChatMemberStateChange.Left ); // StateChange
-            leaveChat.Write( Client.SteamID.ConvertToUInt64() ); // ChatterActedBy
+            leaveChat.Write( localSteamID ); // ChatterActedBy
 
             Client.Send( leaveChat );
         }
@@ -366,6 +434,16 @@ namespace SteamKit2
         /// <param name="message">The message.</param>
         public void SendChatRoomMessage( SteamID steamIdChat, EChatEntryType type, string message )
         {
+            if ( steamIdChat == null )
+            {
+                throw new ArgumentNullException( nameof(steamIdChat) );
+            }
+
+            if ( message == null )
+            {
+                throw new ArgumentNullException( nameof(message) );
+            }
+
             SteamID chatId = steamIdChat.ConvertToUInt64(); // copy the steamid so we don't modify it
 
             if ( chatId.IsClanAccount )
@@ -379,7 +457,7 @@ namespace SteamKit2
 
             chatMsg.Body.ChatMsgType = type;
             chatMsg.Body.SteamIdChatRoom = chatId;
-            chatMsg.Body.SteamIdChatter = Client.SteamID;
+            chatMsg.Body.SteamIdChatter = Client.SteamID ?? new SteamID(); // Can be null if not connected - will ultimately be ignored in Client.Send.
 
             chatMsg.WriteNullTermString( message, Encoding.UTF8 );
 
@@ -394,6 +472,16 @@ namespace SteamKit2
         /// <param name="steamIdChat">The SteamID of the chat room to invite the user to.</param>
         public void InviteUserToChat( SteamID steamIdUser, SteamID steamIdChat )
         {
+            if ( steamIdUser == null )
+            {
+                throw new ArgumentNullException( nameof(steamIdUser) );
+            }
+
+            if ( steamIdChat == null )
+            {
+                throw new ArgumentNullException( nameof(steamIdChat) );
+            }
+
             SteamID chatId = steamIdChat.ConvertToUInt64(); // copy the steamid so we don't modify it
 
             if ( chatId.IsClanAccount )
@@ -409,7 +497,7 @@ namespace SteamKit2
             inviteMsg.Body.steam_id_invited = steamIdUser;
             // steamclient also sends the steamid of the user that did the invitation
             // we'll mimic that behavior
-            inviteMsg.Body.steam_id_patron = Client.SteamID;
+            inviteMsg.Body.steam_id_patron = Client.SteamID ?? new SteamID();
 
             this.Client.Send( inviteMsg );
         }
@@ -421,6 +509,16 @@ namespace SteamKit2
         /// <param name="steamIdMember">The SteamID of the member to kick from the chat.</param>
         public void KickChatMember( SteamID steamIdChat, SteamID steamIdMember )
         {
+            if ( steamIdChat == null )
+            {
+                throw new ArgumentNullException( nameof(steamIdChat) );
+            }
+
+            if ( steamIdMember == null )
+            {
+                throw new ArgumentNullException( nameof(steamIdMember) );
+            }
+
             SteamID chatId = steamIdChat.ConvertToUInt64(); // copy the steamid so we don't modify it
 
             var kickMember = new ClientMsg<MsgClientChatAction>();
@@ -447,6 +545,16 @@ namespace SteamKit2
         /// <param name="steamIdMember">The SteamID of the member to ban from the chat.</param>
         public void BanChatMember( SteamID steamIdChat, SteamID steamIdMember )
         {
+            if ( steamIdChat == null )
+            {
+                throw new ArgumentNullException( nameof(steamIdChat) );
+            }
+
+            if ( steamIdMember == null )
+            {
+                throw new ArgumentNullException( nameof(steamIdMember) );
+            }
+
             SteamID chatId = steamIdChat.ConvertToUInt64(); // copy the steamid so we don't modify it
 
             var banMember = new ClientMsg<MsgClientChatAction>();
@@ -472,6 +580,16 @@ namespace SteamKit2
         /// <param name="steamIdMember">The SteamID of the member to unban from the chat.</param>
         public void UnbanChatMember( SteamID steamIdChat, SteamID steamIdMember )
         {
+            if ( steamIdChat == null )
+            {
+                throw new ArgumentNullException( nameof(steamIdChat) );
+            }
+
+            if ( steamIdMember == null )
+            {
+                throw new ArgumentNullException( nameof(steamIdMember) );
+            }
+
             SteamID chatId = steamIdChat.ConvertToUInt64(); // copy the steamid so we don't modify it
 
             var unbanMember = new ClientMsg<MsgClientChatAction>();
@@ -491,21 +609,24 @@ namespace SteamKit2
             this.Client.Send( unbanMember );
         }
 
-
-        // the default details to request in most situations
-        const EClientPersonaStateFlag defaultInfoRequest =
-            EClientPersonaStateFlag.PlayerName | EClientPersonaStateFlag.Presence |
-            EClientPersonaStateFlag.SourceID | EClientPersonaStateFlag.GameExtraInfo |
-            EClientPersonaStateFlag.LastSeen;
-
         /// <summary>
         /// Requests persona state for a list of specified SteamID.
         /// Results are returned in <see cref="SteamFriends.PersonaStateCallback"/>.
         /// </summary>
         /// <param name="steamIdList">A list of SteamIDs to request the info of.</param>
-        /// <param name="requestedInfo">The requested info flags.</param>
-        public void RequestFriendInfo( IEnumerable<SteamID> steamIdList, EClientPersonaStateFlag requestedInfo = defaultInfoRequest )
+        /// <param name="requestedInfo">The requested info flags. If none specified, this uses <see cref="SteamConfiguration.DefaultPersonaStateFlags"/>.</param>
+        public void RequestFriendInfo( IEnumerable<SteamID> steamIdList, EClientPersonaStateFlag requestedInfo = default(EClientPersonaStateFlag) )
         {
+            if ( steamIdList == null )
+            {
+                throw new ArgumentNullException( nameof(steamIdList) );
+            }
+
+            if ( requestedInfo == default(EClientPersonaStateFlag) )
+            {
+                requestedInfo = Client.Configuration.DefaultPersonaStateFlags;
+            }
+
             var request = new ClientMsgProtobuf<CMsgClientRequestFriendData>( EMsg.ClientRequestFriendData );
 
             request.Body.friends.AddRange( steamIdList.Select( sID => sID.ConvertToUInt64() ) );
@@ -518,9 +639,14 @@ namespace SteamKit2
         /// Results are returned in <see cref="SteamFriends.PersonaStateCallback"/>.
         /// </summary>
         /// <param name="steamId">A SteamID to request the info of.</param>
-        /// <param name="requestedInfo">The requested info flags.</param>
-        public void RequestFriendInfo( SteamID steamId, EClientPersonaStateFlag requestedInfo = defaultInfoRequest )
+        /// <param name="requestedInfo">The requested info flags. If none specified, this uses <see cref="SteamConfiguration.DefaultPersonaStateFlags"/>.</param>
+        public void RequestFriendInfo( SteamID steamId, EClientPersonaStateFlag requestedInfo = 0 )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             RequestFriendInfo( new SteamID[] { steamId }, requestedInfo );
         }
 
@@ -534,10 +660,15 @@ namespace SteamKit2
         /// <returns>The Job ID of the request. This can be used to find the appropriate <see cref="IgnoreFriendCallback"/>.</returns>
         public AsyncJob<IgnoreFriendCallback> IgnoreFriend( SteamID steamId, bool setIgnore = true )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             var ignore = new ClientMsg<MsgClientSetIgnoreFriend>();
             ignore.SourceJobID = Client.GetNextJobID();
 
-            ignore.Body.MySteamId = Client.SteamID;
+            ignore.Body.MySteamId = Client.SteamID ?? new SteamID(); // Can be null if not connected - will ultimately be ignored in Client.Send.
             ignore.Body.Ignore = ( byte )( setIgnore ? 1 : 0 );
             ignore.Body.SteamIdFriend = steamId;
 
@@ -556,6 +687,11 @@ namespace SteamKit2
         /// <returns>The Job ID of the request. This can be used to find the appropriate <see cref="ProfileInfoCallback"/>.</returns>
         public AsyncJob<ProfileInfoCallback> RequestProfileInfo( SteamID steamId )
         {
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
             var request = new ClientMsgProtobuf<CMsgClientFriendProfileInfo>( EMsg.ClientFriendProfileInfo );
             request.SourceJobID = Client.GetNextJobID();
 
@@ -573,7 +709,12 @@ namespace SteamKit2
         /// <param name="steamId">SteamID of the friend</param>
         public void RequestMessageHistory( SteamID steamId )
         {
-            var request = new ClientMsgProtobuf<CMsgClientFSGetFriendMessageHistory>( EMsg.ClientFSGetFriendMessageHistory );
+            if ( steamId == null )
+            {
+                throw new ArgumentNullException( nameof(steamId) );
+            }
+
+            var request = new ClientMsgProtobuf<CMsgClientChatGetFriendMessageHistory>( EMsg.ClientChatGetFriendMessageHistory );
 
             request.Body.steamid = steamId;
 
@@ -587,7 +728,7 @@ namespace SteamKit2
         /// </summary>
         public void RequestOfflineMessages()
         {
-            var request = new ClientMsgProtobuf<CMsgClientFSGetFriendMessageHistoryForOfflineMessages>( EMsg.ClientFSGetFriendMessageHistoryForOfflineMessages );
+            var request = new ClientMsgProtobuf<CMsgClientChatGetFriendMessageHistoryForOfflineMessages>( EMsg.ClientChatGetFriendMessageHistoryForOfflineMessages );
             
             this.Client.Send( request );
         }
@@ -599,8 +740,12 @@ namespace SteamKit2
         /// <param name="packetMsg">The packet message that contains the data.</param>
         public override void HandleMsg( IPacketMsg packetMsg )
         {
-            Action<IPacketMsg> handlerFunc;
-            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out handlerFunc );
+            if ( packetMsg == null )
+            {
+                throw new ArgumentNullException( nameof(packetMsg) );
+            }
+
+            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out var handlerFunc );
 
             if ( !haveFunc )
             {
@@ -638,9 +783,9 @@ namespace SteamKit2
 
         private void HandleFriendMessageHistoryResponse( IPacketMsg packetMsg )
         {
-            var historyResponse = new ClientMsgProtobuf<CMsgClientFSGetFriendMessageHistoryResponse>( packetMsg );
+            var historyResponse = new ClientMsgProtobuf<CMsgClientChatGetFriendMessageHistoryResponse>( packetMsg );
 
-            var callback = new FriendMsgHistoryCallback( historyResponse.Body, this.Client.ConnectedUniverse );
+            var callback = new FriendMsgHistoryCallback( historyResponse.Body, this.Client.Universe );
             this.Client.PostCallback( callback );
         }
 
@@ -648,7 +793,7 @@ namespace SteamKit2
         {
             var list = new ClientMsgProtobuf<CMsgClientFriendsList>( packetMsg );
 
-            cache.LocalUser.SteamID = this.Client.SteamID;
+            cache.LocalUser.SteamID = this.Client.SteamID!;
 
             if ( !list.Body.bincremental )
             {
@@ -663,7 +808,7 @@ namespace SteamKit2
             // we have to request information for all of our friends because steam only sends persona information for online friends
             var reqInfo = new ClientMsgProtobuf<CMsgClientRequestFriendData>( EMsg.ClientRequestFriendData );
 
-            reqInfo.Body.persona_state_requested = ( uint )defaultInfoRequest;
+            reqInfo.Body.persona_state_requested = ( uint )Client.Configuration.DefaultPersonaStateFlags;
 
             lock ( listLock )
             {

@@ -50,6 +50,11 @@ namespace SteamKit2
         /// </returns>
         public static implicit operator ulong ( JobID jobId )
         {
+            if ( jobId == null )
+            {
+                throw new ArgumentNullException( nameof(jobId) );
+            }
+
             return jobId.Value;
         }
 
@@ -74,6 +79,11 @@ namespace SteamKit2
         /// </returns>
         public static implicit operator JobID( AsyncJob asyncJob )
         {
+            if ( asyncJob == null )
+            {
+                throw new ArgumentNullException( nameof(asyncJob) );
+            }
+
             return asyncJob.JobID;
         }
     }
@@ -90,7 +100,7 @@ namespace SteamKit2
         /// <summary>
         /// Gets the <see cref="JobID"/> for this job.
         /// </summary>
-        public JobID JobID { get; private set; }
+        public JobID JobID { get; }
 
         /// <summary>
         /// Gets or sets the period of time before this job will be considered timed out and will be canceled. By default this is 10 seconds.
@@ -103,14 +113,32 @@ namespace SteamKit2
         }
 
 
-        internal AsyncJob( SteamClient client, ulong jobId )
+        internal AsyncJob( SteamClient client, JobID jobId )
         {
+            if ( client == null )
+            {
+                throw new ArgumentNullException( nameof(client) );
+            }
+            
+            if ( jobId == null )
+            {
+                throw new ArgumentNullException( nameof(jobId) );
+            }
+
             jobStart = DateTime.UtcNow;
             JobID = jobId;
 
-            client.StartJob( this );
+            
         }
 
+        /// <summary>
+        /// Constructors are required to register this AsyncJob with the JobManager once initialized.
+        /// </summary>
+        /// <param name="client"></param>
+        internal void RegisterJob( SteamClient client )
+        {
+            client.StartJob( this );
+        }
 
         /// <summary>
         /// Adds a callback to the async job's result set.
@@ -146,7 +174,7 @@ namespace SteamKit2
     public sealed class AsyncJob<T> : AsyncJob
         where T : CallbackMsg
     {
-        TaskCompletionSource<T> tcs;
+        readonly TaskCompletionSource<T> tcs;
 
 
         /// <summary>
@@ -157,7 +185,9 @@ namespace SteamKit2
         public AsyncJob( SteamClient client, JobID jobId )
             : base( client, jobId )
         {
-            tcs = new TaskCompletionSource<T>();
+            tcs = new TaskCompletionSource<T>( TaskCreationOptions.RunContinuationsAsynchronously );
+
+            RegisterJob( client );
         }
 
 
@@ -248,7 +278,7 @@ namespace SteamKit2
             /// <summary>
             /// Gets a read only collection of callback results for this async job.
             /// </summary>
-            public ReadOnlyCollection<T> Results { get; internal set; }
+            public ReadOnlyCollection<T>? Results { get; internal set; }
         }
 
 
@@ -267,9 +297,11 @@ namespace SteamKit2
         public AsyncJobMultiple( SteamClient client, JobID jobId, Predicate<T> finishCondition )
                     : base( client, jobId )
         {
-            tcs = new TaskCompletionSource<ResultSet>();
+            tcs = new TaskCompletionSource<ResultSet>( TaskCreationOptions.RunContinuationsAsynchronously );
 
             this.finishCondition = finishCondition;
+
+            RegisterJob( client );
         }
 
 

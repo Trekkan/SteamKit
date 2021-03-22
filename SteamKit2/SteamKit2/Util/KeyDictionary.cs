@@ -15,7 +15,7 @@ namespace SteamKit2
     /// </summary>
     public static class KeyDictionary
     {
-        static Dictionary<EUniverse, byte[]> keys = new Dictionary<EUniverse, byte[]>
+        static Dictionary<EUniverse, byte[]?> keys = new Dictionary<EUniverse, byte[]?>
         {
             [ EUniverse.Invalid ] = null,
 
@@ -81,10 +81,12 @@ namespace SteamKit2
         /// </summary>
         /// <returns>The public key.</returns>
         /// <param name="eUniverse">The universe.</param>
-        public static byte[] GetPublicKey( EUniverse eUniverse )
+        public static byte[]? GetPublicKey( EUniverse eUniverse )
         {
-            if ( keys.ContainsKey( eUniverse ) )
-                return keys[ eUniverse ];
+            if ( keys.TryGetValue( eUniverse, out var key ) )
+            {
+                return key;
+            }
 
             return keys[ EUniverse.Invalid ];
         }

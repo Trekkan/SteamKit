@@ -1,3 +1,4 @@
 @echo off
 
-..\SteamLanguageParser\bin\Release\SteamLanguageParser.exe ..\..\
+cd ..\SteamLanguageParser
+dotnet run ..\..\

@@ -29,7 +29,7 @@ namespace SteamKit2
             /// Gets or sets the filter used for querying the master server.
             /// Check https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol for details on how the filter is structured.
             /// </summary>
-            public string Filter { get; set; }
+            public string? Filter { get; set; }
             /// <summary>
             /// Gets or sets the region that servers will be returned from.
             /// </summary>
@@ -39,7 +39,7 @@ namespace SteamKit2
             /// Gets or sets the IP address that will be GeoIP located.
             /// This is done to return servers closer to this location.
             /// </summary>
-            public IPAddress GeoLocatedIP { get; set; }
+            public IPAddress? GeoLocatedIP { get; set; }
 
             /// <summary>
             /// Gets or sets the maximum number of servers to return.
@@ -68,13 +68,20 @@ namespace SteamKit2
         /// <returns>The Job ID of the request. This can be used to find the appropriate <see cref="QueryCallback"/>.</returns>
         public AsyncJob<QueryCallback> ServerQuery( QueryDetails details )
         {
+            if ( details == null )
+            {
+                throw new ArgumentNullException( nameof(details) );
+            }
+
             var query = new ClientMsgProtobuf<CMsgClientGMSServerQuery>( EMsg.ClientGMSServerQuery );
             query.SourceJobID = Client.GetNextJobID();
 
             query.Body.app_id = details.AppID;
 
             if ( details.GeoLocatedIP != null )
-                query.Body.geo_location_ip = NetHelpers.GetIPAddress( details.GeoLocatedIP );
+            {
+                query.Body.geo_location_ip = NetHelpers.GetIPAddressAsUInt( details.GeoLocatedIP );
+            }
 
             query.Body.filter_text = details.Filter;
             query.Body.region_code = ( uint )details.Region;
@@ -93,8 +100,12 @@ namespace SteamKit2
         /// <param name="packetMsg">The packet message that contains the data.</param>
         public override void HandleMsg( IPacketMsg packetMsg )
         {
-            Action<IPacketMsg> handlerFunc;
-            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out handlerFunc );
+            if ( packetMsg == null )
+            {
+                throw new ArgumentNullException( nameof(packetMsg) );
+            }
+
+            bool haveFunc = dispatchMap.TryGetValue( packetMsg.MsgType, out var handlerFunc );
 
             if ( !haveFunc )
             {
